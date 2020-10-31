@@ -12,7 +12,7 @@ int main(int argc, char** argv) {
 	int forrest_size = 0;
 	int generations = 0;
 
-	char line_buffer[MAX_FORREST_SIZE*4];
+	char line_buffer[MAX_FORREST_SIZE * 4];
 	if (strstr(*(argv + 1), ".txt") == NULL) {
 		printf("Error: incorrect argument\n");
 		exit(-1);
@@ -20,7 +20,7 @@ int main(int argc, char** argv) {
 
 	printf("opening files\n");
 
-	FILE* forrest_input = fopen(*(argv+1), "r");
+	FILE* forrest_input = fopen(*(argv + 1), "r");
 	if (forrest_input == NULL) {
 		printf("Error: no such file in directory\n");
 		exit(-1);
@@ -42,11 +42,10 @@ int main(int argc, char** argv) {
 	char* forrest_array = (char*)malloc(forrest_size * forrest_size * sizeof(char));
 	char_CSV_parser(forrest_input, forrest_size, forrest_size, forrest_array);
 
-	print_char_array(forrest_array,forrest_size,forrest_size);
-
+	print_char_array(forrest_array, forrest_size, forrest_size);
 
 	//TODO: loop for x generations and execute generational update of forrest
-
+		
 	//TODO: call Son with string descirbing forest
 
 	//TODO: exit safely
