@@ -41,7 +41,8 @@ int main(int argc, char** argv) {
 
 	char* forrest_array = (char*)malloc(forrest_size * forrest_size * sizeof(char));
 	char_CSV_parser(forrest_input, forrest_size, forrest_size, forrest_array);
-
+	print_char_array(forrest_array, forrest_size, forrest_size);
+	arr_to_upper(forrest_array, forrest_size, forrest_size);
 	print_char_array(forrest_array, forrest_size, forrest_size);
 
 	//TODO: loop for x generations and execute generational update of forrest

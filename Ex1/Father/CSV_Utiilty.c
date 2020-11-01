@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <ctype.h>
 #include "CSV_Utility.h"
 #include "HardCodedData.h"
 
@@ -38,3 +39,13 @@ void print_char_array(char* array, int rows, int columns) {
 }
 
 //TODO: add capitalize array function
+
+void arr_to_upper(char* array,int row, int column ) {
+
+	int i, j = 0;
+	for (i = 0; i < row; i++) {
+		for (j = 0; j < column; j++) {
+			*(array + i * column + j) = toupper(*(array + i * column + j));
+		}
+	}
+}
