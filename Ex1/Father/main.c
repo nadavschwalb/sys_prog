@@ -49,8 +49,11 @@ int main(int argc, char** argv) {
 	print_char_array(forrest_array, forrest_size, forrest_size);
 	arr_to_upper(forrest_array, forrest_size, forrest_size);
 	print_char_array(forrest_array, forrest_size, forrest_size);
-	forrest_next_gen(forrest_size, forrest_array);
-	print_char_array(forrest_array, forrest_size, forrest_size);
+	printf("generations: %d\n", generations);
+	for (int i = 0; i < generations-1; i++) {
+		forrest_next_gen(forrest_size, forrest_array);
+		print_char_array(forrest_array, forrest_size, forrest_size);
+	}
 	//TODO: loop for x generations and execute generational update of forrest
 		
 	//TODO: call Son with string descirbing forest

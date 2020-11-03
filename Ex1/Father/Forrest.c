@@ -17,14 +17,8 @@ void forrest_next_gen(int forest_size, char* forrest_array) {
 		printf("Error: failed to allocate memory. \n");
 		exit(-1);
 	}
-
 	matrix_extender(forrest_array, old_forrest_copy, forest_size);
-
-	print_char_array(old_forrest_copy, forest_size + 2, forest_size + 2);
 	next_generation_calculator(forrest_array, old_forrest_copy, forest_size);
-	print_char_array(forrest_array, forest_size, forest_size);
-
-
 }
 
 void next_generation_calculator(char* new_generation_matrix, char* old_generation_matrix,int new_matrix_size) {
