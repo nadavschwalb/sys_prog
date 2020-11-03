@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include "HardCodedData.h"
 #include "CSV_Utility.h"
+#include "Forrest.h"
 
 int main(int argc, char** argv) {
 
@@ -40,14 +41,21 @@ int main(int argc, char** argv) {
 	printf("forrest size: %d, generations: %d\n", forrest_size, generations);
 
 	char* forrest_array = (char*)malloc(forrest_size * forrest_size * sizeof(char));
+	if (forrest_array == NULL) {
+		printf("Error: failed to allocate memory. \n");
+		exit(-1);
+	}
 	char_CSV_parser(forrest_input, forrest_size, forrest_size, forrest_array);
 	print_char_array(forrest_array, forrest_size, forrest_size);
 	arr_to_upper(forrest_array, forrest_size, forrest_size);
 	print_char_array(forrest_array, forrest_size, forrest_size);
-
+	forrest_next_gen(forrest_size, forrest_array);
+	print_char_array(forrest_array, forrest_size, forrest_size);
 	//TODO: loop for x generations and execute generational update of forrest
 		
 	//TODO: call Son with string descirbing forest
+
+	//TODO: output to file
 
 	//TODO: exit safely
 	fclose(forrest_input);
@@ -55,3 +63,4 @@ int main(int argc, char** argv) {
 	free(forrest_array);
 	return 0;
 }
+
