@@ -1,6 +1,6 @@
 4
 5
-T,G,g,F
-F,f,T,G
-T,g,F,T
-f,T,g,F
+T,G,f,F
+G,t,t,F
+G,t,F,g
+T,f,g,T

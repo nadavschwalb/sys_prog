@@ -25,20 +25,25 @@ void char_CSV_parser(FILE* fp, int rows, int columns, char* array) {
 		k = 0;
 		j = 0;
 	}
+	*(array + rows * columns) = '\0';
 }
 
-void print_char_array(char* array, int rows, int columns) {
-	printf("printing array to screen\n");
+void print_char_array(char* array, int rows, int columns ,const char* array_name) {
+	printf("%s \n",array_name);
 	int i, j = 0;
-	for (i = 0; i < rows; i++) {
-		for (j = 0; j < columns; j++) {
+	for (i = 0; i < rows - 1; i++) {
+		for (j = 0; j < columns - 1; j++) {
 			printf("%c,",*(array + i*columns + j));
 		}
-		printf("\n");
+		printf("%c\n", *(array + i * columns + j + 1));
 	}
+	for (j = 0; j < columns - 1; j++) {
+		printf("%c,", *(array + i * columns + j));
+	}
+	printf("%c\n", *(array + i * columns + j));
+	
 }
 
-//TODO: add capitalize array function
 
 void arr_to_upper(char* array,int row, int column ) {
 
@@ -49,3 +54,4 @@ void arr_to_upper(char* array,int row, int column ) {
 		}
 	}
 }
+

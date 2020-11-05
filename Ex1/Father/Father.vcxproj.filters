@@ -24,6 +24,9 @@
     <ClCompile Include="CSV_Utiilty.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Process_Generator.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="HardCodedData.h">
@@ -33,6 +36,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="CSV_Utility.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Process_Generator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -7,9 +7,7 @@ int main(int argc, char** argv) {
 	char* buffer;
 	int burnt_count = 0;
 	buffer = strupr(*(argv + 1));
-	printf("input string: %s\n", buffer);
 	burnt_count = char_in_str(buffer, 'F');
-	printf("Burnt trees: %d\n", burnt_count);
 		
 	exit(burnt_count);
 }

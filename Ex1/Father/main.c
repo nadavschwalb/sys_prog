@@ -5,6 +5,8 @@
 #include "HardCodedData.h"
 #include "CSV_Utility.h"
 #include "Forrest.h"
+#include <Windows.h>
+#include "Process_Generator.h"
 
 int main(int argc, char** argv) {
 
@@ -12,6 +14,7 @@ int main(int argc, char** argv) {
 
 	int forrest_size = 0;
 	int generations = 0;
+	int burned_count = 0;
 
 	char line_buffer[MAX_FORREST_SIZE * 4];
 	if (strstr(*(argv + 1), ".txt") == NULL) {
@@ -40,23 +43,27 @@ int main(int argc, char** argv) {
 
 	printf("forrest size: %d, generations: %d\n", forrest_size, generations);
 
-	char* forrest_array = (char*)malloc(forrest_size * forrest_size * sizeof(char));
+	char* forrest_array = (char*)malloc(forrest_size * forrest_size * sizeof(char) + 1);
 	if (forrest_array == NULL) {
 		printf("Error: failed to allocate memory. \n");
 		exit(-1);
 	}
 	char_CSV_parser(forrest_input, forrest_size, forrest_size, forrest_array);
-	print_char_array(forrest_array, forrest_size, forrest_size);
 	arr_to_upper(forrest_array, forrest_size, forrest_size);
-	print_char_array(forrest_array, forrest_size, forrest_size);
-	printf("generations: %d\n", generations);
+	print_char_array(forrest_array, forrest_size, forrest_size ,"current forrest");
+	burned_count = CreateProcessSimpleMain(forrest_array);
+	printf("generation: %d, burnt trees: %d\n", 1, burned_count);;
+	fprintf_s(forrest_output, "%s - %d\n", forrest_array, burned_count);
 	for (int i = 0; i < generations-1; i++) {
 		forrest_next_gen(forrest_size, forrest_array);
-		print_char_array(forrest_array, forrest_size, forrest_size);
+		print_char_array(forrest_array, forrest_size, forrest_size, "current forrest");
+		burned_count = CreateProcessSimpleMain(forrest_array);
+		printf("generation: %d, burnt trees: %d\n",i+2,burned_count);
+		fprintf_s(forrest_output, "%s - %d\n", forrest_array, burned_count);
 	}
-	//TODO: loop for x generations and execute generational update of forrest
+
 		
-	//TODO: call Son with string descirbing forest
+	
 
 	//TODO: output to file
 
@@ -64,6 +71,7 @@ int main(int argc, char** argv) {
 	fclose(forrest_input);
 	fclose(forrest_output);
 	free(forrest_array);
+	printf("program ended succesfuly\n");
 	return 0;
 }
 

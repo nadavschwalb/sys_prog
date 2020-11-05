@@ -129,11 +129,13 @@
     <ClCompile Include="CSV_Utiilty.c" />
     <ClCompile Include="Forrest.c" />
     <ClCompile Include="main.c" />
+    <ClCompile Include="Process_Generator.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CSV_Utility.h" />
     <ClInclude Include="Forrest.h" />
     <ClInclude Include="HardCodedData.h" />
+    <ClInclude Include="Process_Generator.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
