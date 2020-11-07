@@ -22,7 +22,7 @@ int CreateProcessSimpleMain(char* arg)
 	if (retVal == 0)
 	{
 		printf("Process Creation Failed!\n");
-		return;
+		return -1;
 	}
 
 

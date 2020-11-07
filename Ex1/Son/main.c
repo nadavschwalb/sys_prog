@@ -3,7 +3,7 @@
 #include <string.h>
 #include "CountChars.h"
 int main(int argc, char** argv) {
-	
+	printf("son called with input string %s\n", *(argv + 1));
 	char* buffer;
 	int burnt_count = 0;
 	buffer = strupr(*(argv + 1));

@@ -10,8 +10,15 @@
 #include "CSV_Utility.h"
 #include "Forrest.h"
 
+//local function declarations
+void matrix_extender(char* original_matrix_pt, char* new_matrix_pt, int mat_size);
+int neighbours_counter(char* arrey_pointer, int i, int j, int line_size, char look_for);
+int diagonal_neighbors_counter(char* arrey_pointer, int i, int j, int line_size, char look_for);
+int diagonal_neighbors_counter(char* arrey_pointer, int i, int j, int line_size, char look_for);
+void next_generation_calculator(char* new_generation_matrix, char* old_generation_matrix, int new_matrix_size);
+
 void forrest_next_gen(int forest_size, char* forrest_array) {
-	int i, j = 0;
+	//copy array into zero padded array and calculate next generation
 	char* old_forrest_copy = (char*)malloc((forest_size+2) * (forest_size+2) * sizeof(char));
 	if (old_forrest_copy == NULL) {
 		printf("Error: failed to allocate memory. \n");
@@ -22,6 +29,7 @@ void forrest_next_gen(int forest_size, char* forrest_array) {
 }
 
 void next_generation_calculator(char* new_generation_matrix, char* old_generation_matrix,int new_matrix_size) {
+	//calculate next generation array 
 	int i, j;
 	for (i = 1; i < new_matrix_size + 1; i++) {
 		for (j = 1; j < new_matrix_size + 1; j++) {
@@ -39,7 +47,7 @@ void next_generation_calculator(char* new_generation_matrix, char* old_generatio
 				break;
 			case 'G':
 				if (1 < neighbours_counter(old_generation_matrix, i, j, new_matrix_size + 2, 'T') +
-					diagonal_naibors_counter(old_generation_matrix, i, j, new_matrix_size + 2, 'T')) {
+					diagonal_neighbors_counter(old_generation_matrix, i, j, new_matrix_size + 2, 'T')) {
 					*(new_generation_matrix + (i - 1)*new_matrix_size + (j - 1)) = 'T';
 				}
 				else {
@@ -52,8 +60,8 @@ void next_generation_calculator(char* new_generation_matrix, char* old_generatio
 	}
 }
 
-void matrix_extender(char* original_matrix_pt, char* new_matrix_pt ,int mat_size)
-{
+void matrix_extender(char* original_matrix_pt, char* new_matrix_pt ,int mat_size){
+	//zero pad array to aid next forrest calculation
 	int i, j;
 	for (i = 0; i < mat_size + 2; i++)
 	{
@@ -71,47 +79,9 @@ void matrix_extender(char* original_matrix_pt, char* new_matrix_pt ,int mat_size
 	}
 }
 
-	//TODO: create for input
 
-//int	z = 0;
-//
-//	for (i = 0; i < forrest_size; i++) {
-//		for (j = 0 ; j < forrest_size; j++) {
-//			printf("%c\n", *(next_generation_forrest_array + i * forrest_size + j));
-//			switch (*(old_forrest_array + i * forrest_size + j))
-//			{
-//			case 'T':
-//				if (neighbours_counter((old_forrest_array + i * forrest_size + j), i, j, forrest_size, 'F') > 0) {
-//					*(next_generation_forrest_array + i * forrest_size + j) = 'F';
-//				}
-//				else
-//				{
-//					*(next_generation_forrest_array + i * forrest_size + j) = 'T';
-//				}
-//				break;
-//			case 'G':
-//				if (neighbours_counter((old_forrest_array + i * forrest_size + j), i, j, forrest_size, 'F') + diagonal_naibors_counter((old_forrest_array + i * forrest_size + j), i, j, forrest_size, 'F') > 1)
-//				{
-//					*(next_generation_forrest_array + i * forrest_size + j) = 'T';
-//				}
-//				else
-//				{
-//					*(next_generation_forrest_array + i * forrest_size + j) = 'G';
-//				}
-//				break;
-//			case 'F':
-//				*(next_generation_forrest_array +i*forrest_size +j) = 'G';
-//				break;
-//			}
-//			z++;
-//			printf("%d\n", z);
-//			printf("%c\n", *(next_generation_forrest_array + i * forrest_size + j));
-//		}
-//	}
-//	return next_generation_forrest_array;
-//}
-//
 int neighbours_counter(char* arrey_pointer, int i, int j, int line_size, char look_for) {
+	//count non diagonal neighbors
 	int counter = 0;
 	if (*(arrey_pointer+i*(line_size)+j + 1) == look_for){
 		counter += 1;
@@ -128,7 +98,8 @@ int neighbours_counter(char* arrey_pointer, int i, int j, int line_size, char lo
 	return counter;
 }
 
-int diagonal_naibors_counter(char* arrey_pointer, int i, int j, int line_size, char look_for) {
+int diagonal_neighbors_counter(char* arrey_pointer, int i, int j, int line_size, char look_for) {
+	//count diagonal neighbors
 	int counter = 0;
 	if (*(arrey_pointer +i*(line_size)+j + line_size + 1) == look_for) {
 		counter += 1;
