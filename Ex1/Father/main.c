@@ -1,11 +1,17 @@
-//proram simulates trees burning in a forrest
+/*	Authors - Nadav Schwalb 302208251 Shoval Ben Shushan 203883830
+	Project EX1 - Father
+	Description - program reads input file with square forrest of char type and number of gens to run
+				  runs given generations and calls son to calculate number of burnt trees in the forrest
+				  in each generation.
+				  outputs each generation to "output.txt"
+*/
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <Windows.h>
 #include "HardCodedData.h"
 #include "CSV_Utility.h"
 #include "Forrest.h"
-#include <Windows.h>
 #include "Process_Generator.h"
 
 int main(int argc, char** argv) {
@@ -24,7 +30,7 @@ int main(int argc, char** argv) {
 
 	printf("opening files\n");
  
-	//open input and output files
+	//open input and output files, closed on cleanup
 	FILE* forrest_input = fopen(*(argv + 1), "r");
 	if (forrest_input == NULL) {
 		printf("Error: no such file in directory\n");

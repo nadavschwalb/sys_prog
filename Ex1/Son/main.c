@@ -1,4 +1,8 @@
-// program counts the number of burnt tree's in the forrest by counting the number of F's in the input string
+/*	Authors - Nadav Schwalb 302208251 Shoval Ben Shushan 203883830
+	Project EX1 - Son
+	Description - program is called by Father with a arg string wich represents the forrest
+				  calculates number of char F (fire) in string and returns as exit code
+*/
 #include <stdio.h>
 #include <string.h>
 #include "CountChars.h"

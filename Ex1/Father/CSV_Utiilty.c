@@ -6,7 +6,6 @@
 #include "HardCodedData.h"
 
 void char_CSV_parser(FILE* fp, int rows, int columns, char* array) {
-	//parses CSV style array into a 2D array of char type
 	char line_buffer[MAX_INPUT_STRING_LENGTH];
 	int i = 0;
 	int j = 0;
@@ -29,7 +28,6 @@ void char_CSV_parser(FILE* fp, int rows, int columns, char* array) {
 }
 
 void print_char_array(char* array, int rows, int columns ,const char* array_name) {
-	//prints array to stdout (terminal)
 	printf("%s \n",array_name);
 	int i, j = 0;
 	for (i = 0; i < rows - 1; i++) {
@@ -47,7 +45,6 @@ void print_char_array(char* array, int rows, int columns ,const char* array_name
 
 
 void arr_to_upper(char* array,int row, int column ) {
-	//makes sure all chars in array are uppercase
 	int i, j = 0;
 	for (i = 0; i < row; i++) {
 		for (j = 0; j < column; j++) {
