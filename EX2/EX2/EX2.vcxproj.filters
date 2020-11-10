@@ -24,6 +24,9 @@
     <ClCompile Include="Thread_Functions.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="File_Utilities.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Decrypter.h">
@@ -33,6 +36,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="HardCodedData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="File_Utilities.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

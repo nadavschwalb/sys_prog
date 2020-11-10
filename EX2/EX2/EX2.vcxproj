@@ -127,11 +127,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Decrypter.c" />
+    <ClCompile Include="File_Utilities.c" />
     <ClCompile Include="main.c" />
     <ClCompile Include="Thread_Functions.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Decrypter.h" />
+    <ClInclude Include="File_Utilities.h" />
     <ClInclude Include="HardCodedData.h" />
     <ClInclude Include="Thread_Functions.h" />
   </ItemGroup>
