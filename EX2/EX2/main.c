@@ -30,7 +30,7 @@ int main(int argc, TCHAR* argv[]) {
 		cypher_key = atoi(argv[2]);
 	}
 
-	//TODO: open input file windows API
+	//open input file and get file size ------------------------------------------------
 	input_file = create_new_file(dir_path,OPEN_EXISTING);
 	input_file_size = GetFileSize(input_file, NULL);
 	char line_buffer[BUFFSIZE + 1];
@@ -49,19 +49,19 @@ int main(int argc, TCHAR* argv[]) {
 	}
 
 
-	//TODO: open output file decrypted.txt in folder path
+	//open output file relative to input file -----------------------------------------
 	LPCSTR output_file_name = (LPCSTR)strcat(dir_path, "decrypted.txt");
 	output_file = create_new_file(output_file_name,CREATE_ALWAYS);
 
-	//TODO: read line
+	//loop through file ( this code will go in the thread function)--------------------
 	while (read_file(input_file, line_buffer,BUFFSIZE)) {
 		printf("%s", line_buffer);
 		dycript_string(line_buffer, cypher_key);
 		write_file(output_file, line_buffer, BUFFSIZE);
 		
 	}
-	//TODO: Close files
 
+	//cleanup -------------------------------------------------------------------------
 	CloseHandle(output_file);
 	CloseHandle(input_file);
 	
