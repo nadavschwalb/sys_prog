@@ -1,0 +1,1 @@
+void dycript_string(char str[], int key);

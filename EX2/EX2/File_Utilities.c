@@ -1,6 +1,8 @@
 #include <Windows.h>
 #include <stdio.h>
 #include "HardCodedData.h"
+
+
 HANDLE create_new_file(LPCSTR file_path, DWORD creation_disposition) {
 	 
 	HANDLE hfile = CreateFileA(
@@ -26,9 +28,9 @@ HANDLE create_new_file(LPCSTR file_path, DWORD creation_disposition) {
 
 
 
-void read_line(HANDLE file, char buffer[]) {
-	BOOL success = 1;
-	DWORD nbuff = BUFFSIZE;
+BOOL read_file(HANDLE file, char buffer[],int buffer_size) {
+	BOOL success = TRUE;
+	DWORD nbuff = buffer_size;
 	DWORD bytes_read = 0;
 	success = ReadFile(
 		file,
@@ -41,7 +43,39 @@ void read_line(HANDLE file, char buffer[]) {
 		printf("read line failed error code: %d\n", GetLastError());
 		exit(-1);
 	}
-	//add null terminator
-	buffer[bytes_read] = '\0';
+	if (success && bytes_read == 0) { //EOF
+		return FALSE;
+	}
+	else {
+		//add null terminator
+		buffer[bytes_read] = '\0';
+		return TRUE;
+	}
 	
+}
+
+BOOL write_file(HANDLE file, char buffer[], int buffer_size) {
+	BOOL success = TRUE;
+	DWORD nbuff = buffer_size;
+	DWORD bytes_written = 0;
+	success = WriteFile(
+		file,
+		(void*)buffer,
+		nbuff,
+		&bytes_written,
+		NULL
+	);
+	if (!success) {
+		printf("read line failed error code: %d\n", GetLastError());
+		exit(-1);
+	}
+	if (success && bytes_written <= nbuff) { //written to file
+		buffer[bytes_written] = '\0';
+		return FALSE;
+	}
+	else {
+		//add null terminator
+		printf("unknown file write error occered\nterminating error code: %d\n", GetLastError());
+		exit(-1);
+	}
 }
