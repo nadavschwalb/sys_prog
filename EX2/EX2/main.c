@@ -4,6 +4,7 @@
 #include "HardCodedData.h"
 #include "File_Utilities.h"
 #include "Decrypter.h"
+#include "Thread_Functions.h"
 
 int main(int argc, TCHAR* argv[]) {
 
@@ -13,21 +14,27 @@ int main(int argc, TCHAR* argv[]) {
 	LPCSTR* lpFilePart = { NULL };
 	TCHAR file_name[BUFFSIZE] =TEXT("");
 	int cypher_key = 0;
+	int thread_count = 0;
 	char arg_options = '\0';
 	HANDLE input_file;
 	HANDLE output_file;
 	DWORD64 input_file_size = 0; 
+	HANDLE thread_array[MAX_THREAD_COUNT];
+	p_Thread_Param thread_param_array[MAX_THREAD_COUNT];
+	DWORD thread_ID;
+	HANDLE ghMutex;
 
 	// Check for optional args ---------------------------------------------------------
 	if (argc > 3) {
 		arg_options = *(strchr(argv[1],'-') + 1);
 		retval = GetFullPathNameA(argv[2], BUFFSIZE, dir_path, lpFilePart);
-		
 		cypher_key = atoi(argv[3]);
+		thread_count = atoi(argv[4]);
 	}
 	else {
 		retval = GetFullPathNameA(argv[1], BUFFSIZE, dir_path, lpFilePart);
 		cypher_key = atoi(argv[2]);
+		thread_count = atoi(argv[3]);
 	}
 
 	//open input file and get file size ------------------------------------------------
@@ -53,15 +60,67 @@ int main(int argc, TCHAR* argv[]) {
 	LPCSTR output_file_name = (LPCSTR)strcat(dir_path, "decrypted.txt");
 	output_file = create_new_file(output_file_name,CREATE_ALWAYS);
 
-	//loop through file ( this code will go in the thread function)--------------------
-	while (read_file(input_file, line_buffer,BUFFSIZE)) {
-		printf("%s", line_buffer);
-		dycript_string(line_buffer, cypher_key);
-		write_file(output_file, line_buffer, BUFFSIZE);
-		
+	//split program into threads ------------------------------------------------------
+
+	//create mutual exclution object
+	ghMutex = CreateMutex(NULL, FALSE, NULL);
+	if (ghMutex == NULL) {
+		printf("CreateMutex error: %d\n", GetLastError());
+		exit(GetLastError());
+	}
+	// Create worker threads 
+	for (int i = 0; i < thread_count; i++) {
+		//allocate memory for thread parameter structs
+		thread_param_array[i] = (p_Thread_Param)HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(Thread_Param));
+		if (thread_param_array[i] == NULL) {
+			printf("failed to allocate memory for thread parameter struct: thread number %d\n", i);
+			exit(GetLastError());
+		}
+
+		//set thread parameters
+		thread_param_array[i]->hfile_input = input_file;
+		thread_param_array[i]->hfile_output = output_file;
+		thread_param_array[i]->distance_to_move = (input_file_size / thread_count)*i;
+		thread_param_array[i]->section_length = (i < thread_count-1) ? input_file_size / thread_count : input_file_size / thread_count + input_file_size % thread_count;
+		thread_param_array[i]->ghMutex = ghMutex;
+		thread_param_array[i]->cypher_key = cypher_key;
+
+		//create new thread
+		thread_array[i] = CreateThread(
+							NULL,
+							0,
+							(LPTHREAD_START_ROUTINE)decipher_thread,
+							thread_param_array[i],
+							0,
+							&thread_ID);
+		//check thread was created
+		if (thread_array[i] == NULL) {
+			printf("failed to create thread number %d\n", i);
+			exit(GetLastError());
+		}
 	}
 
+	//wait for all threads to finish
+	WaitForMultipleObjects(thread_count, thread_array, TRUE, INFINITE);
+
+
+
+	////loop through file ( this code will go in the thread function)--------------------
+	//for (int i = 0; i < thread_count - 1; i++) {
+	//	decipher_section(input_file, output_file, input_file_size / thread_count, cypher_key);
+	//}
+	//decipher_section(input_file, output_file, 
+	//				input_file_size/thread_count + input_file_size%thread_count,
+	//				cypher_key);
+
 	//cleanup -------------------------------------------------------------------------
+		//close all threads and mutex and free heap safely
+	for (int i = 0; i < thread_count; i++) {
+		CloseHandle(thread_array[i]);
+		HeapFree(thread_param_array[i], 0, NULL);
+	}
+	CloseHandle(ghMutex);
+
 	CloseHandle(output_file);
 	CloseHandle(input_file);
 	

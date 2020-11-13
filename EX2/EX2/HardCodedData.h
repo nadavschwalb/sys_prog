@@ -1,1 +1,2 @@
 #define BUFFSIZE 256
+#define MAX_THREAD_COUNT 256

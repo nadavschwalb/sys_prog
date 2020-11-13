@@ -54,7 +54,7 @@ BOOL read_file(HANDLE file, char buffer[],int buffer_size) {
 	
 }
 
-BOOL write_file(HANDLE file, char buffer[], int buffer_size) {
+int write_file(HANDLE file, char buffer[], int buffer_size) {
 	BOOL success = TRUE;
 	DWORD nbuff = buffer_size;
 	DWORD bytes_written = 0;
@@ -71,7 +71,7 @@ BOOL write_file(HANDLE file, char buffer[], int buffer_size) {
 	}
 	if (success && bytes_written <= nbuff) { //written to file
 		buffer[bytes_written] = '\0';
-		return FALSE;
+		return bytes_written;
 	}
 	else {
 		//add null terminator
@@ -79,3 +79,5 @@ BOOL write_file(HANDLE file, char buffer[], int buffer_size) {
 		exit(-1);
 	}
 }
+
+
