@@ -7,7 +7,7 @@
 
 DWORD WINAPI decipher_thread(LPVOID lpParam) {
 	p_Thread_Param p_parameters = (p_Thread_Param)lpParam;
-
+	printf("\n-------------\nthread opened: %d\n",p_parameters->thread_num);
 	DWORD dwWaitResult;
 	
 	// request ownership of mutex object 
@@ -19,6 +19,7 @@ DWORD WINAPI decipher_thread(LPVOID lpParam) {
 	case WAIT_OBJECT_0:
 		__try {
 			//change_file_pointer(distance_to_move);
+			printf("\n-------------\nmutex released thread writing: %d\n", p_parameters->thread_num);
 			if (SetFilePointer(p_parameters->hfile_input, p_parameters->distance_to_move, NULL, FILE_BEGIN) == INVALID_SET_FILE_POINTER) {
 				printf("failed to set new pointer in thread\n");
 				exit(GetLastError());
@@ -42,5 +43,6 @@ DWORD WINAPI decipher_thread(LPVOID lpParam) {
 	default:
 		break;
 	}
+	printf("\n-------------\nthread finnished resume program: %d\n", p_parameters->thread_num);
 	return TRUE;
 }

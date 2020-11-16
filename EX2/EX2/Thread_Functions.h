@@ -8,6 +8,7 @@ typedef struct Thread_Param
 	LONG distance_to_move;
 	HANDLE ghMutex;
 	int cypher_key;
+	int thread_num;
 }Thread_Param, *p_Thread_Param;
 
 DWORD WINAPI decipher_thread(LPVOID lpParam);

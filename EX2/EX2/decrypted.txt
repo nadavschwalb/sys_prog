@@ -12,22 +12,4 @@ Ykjpajpo
 2	Xexhekcnwldu
 3	Atpanjwh hejgo
 Atwilha
-Pda pnwjobkniwpekj ywj xa nalnaoajpaz xu whecjejc psk whldwxapo; pda yeldan whldwxap eo pda lhwej whldwxap nkpwpaz habp kn necdp xu okia jqixan kb lkoepekjo. Bkn ejopwjya, dana eo w Ywaown yeldan qoejc w habp nkpwpekj kb pdnaa lhwyao, amqerwhajp pk w necdp odebp kb 89 (pda odebp lwnwiapan eo qoaz wo pda gau):
-
-Lhwej:    WXYZABCDEFGHIJKLMNOPQRSTUV
-Yeldan:   TUVWXYZABCDEFGHIJKLMNOPQRS
-Sdaj ajynulpejc, w lanokj hkkgo ql awyd happan kb pda iaoowca ej pda "lhwej" heja wjz snepao zksj pda yknnaolkjzejc happan ej pda "yeldan" heja.
-
-Lhwejpatp:  PDA MQEYG XNKSJ BKT FQILO KRAN PDA HWVU ZKC
-Yeldanpatp: MAX JNBVD UKHPG YHQ CNFIL HOXK MAX ETSR WHZ
-Zayeldanejc eo zkja ej naranoa, sepd w necdp odebp kb 9.
-
-Pda ajynulpekj ywj whok xa nalnaoajpaz qoejc ikzqhwn wnepdiapey xu benop pnwjobkniejc pda happano ejpk jqixano, wyyknzejc pk pda oydaia, W → 6, X → 7, ..., V → 81.[8] Ajynulpekj kb w happan t xu w odebp j ywj xa zaoynexaz iwpdaiwpeywhhu wo,[9]
-
-{\zeolhwuopuha A_{j}(t)=(t+j)\ikz {82}.}A_{j}(t)=(t+j)\ikz {82}.
-Zaynulpekj eo lanbkniaz oeiehwnhu,
-
-{\zeolhwuopuha Z_{j}(t)=(t-j)\ikz {82}.}Z_{j}(t)=(t-j)\ikz {82}.
-(Pdana wna zebbanajp zabejepekjo bkn pda ikzqhk klanwpekj. Ej pda wxkra, pda naoqhp eo ej pda nwjca 6 pk 81; e.a., eb t + j kn t − j wna jkp ej pda nwjca 6 pk 81, sa dwra pk oqxpnwyp kn wzz 82.)
-
-Pda nalhwyaiajp naiwejo pda owia pdnkqcdkqp pda iaoowca, ok pda yeldan eo yhwooaz wo w pula kb ikjkwhldwxapey oqxopepqpekj, wo kllkoaz pk lkhuwhldwxapey oqxopepqpekj.
+Pda pnwjobkniwpekj ywj xa nalnaoajpaz xu whecjejc psk whldwxapo; pda yeldan whldwxap eo pda lhwej whldwxap nkpwpaz habp kn necdp xu okia jqixan kb lkoepekjo. Bkn ejopwjya, dana eo w Ywaown yeldan qoejc w habp nkpwpekj kb pdnaa lhwyao, amqerwhajp pk w necdp

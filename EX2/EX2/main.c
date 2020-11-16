@@ -1,10 +1,12 @@
 #include <stdio.h>
 #include <string.h>
 #include <Windows.h>
+#include <time.h>
 #include "HardCodedData.h"
 #include "File_Utilities.h"
 #include "Decrypter.h"
 #include "Thread_Functions.h"
+
 
 int main(int argc, TCHAR* argv[]) {
 
@@ -23,6 +25,10 @@ int main(int argc, TCHAR* argv[]) {
 	p_Thread_Param thread_param_array[MAX_THREAD_COUNT];
 	DWORD thread_ID;
 	HANDLE ghMutex;
+	time_t begin =0, end = 0  , execution_time = 0;
+
+	time(&begin);
+
 
 	// Check for optional args ---------------------------------------------------------
 	if (argc > 3) {
@@ -76,6 +82,7 @@ int main(int argc, TCHAR* argv[]) {
 			printf("failed to allocate memory for thread parameter struct: thread number %d\n", i);
 			exit(GetLastError());
 		}
+		
 
 		//set thread parameters
 		thread_param_array[i]->hfile_input = input_file;
@@ -84,6 +91,7 @@ int main(int argc, TCHAR* argv[]) {
 		thread_param_array[i]->section_length = (i < thread_count-1) ? input_file_size / thread_count : input_file_size / thread_count + input_file_size % thread_count;
 		thread_param_array[i]->ghMutex = ghMutex;
 		thread_param_array[i]->cypher_key = cypher_key;
+		thread_param_array[i]->thread_num = i;
 
 		//create new thread
 		thread_array[i] = CreateThread(
@@ -93,6 +101,7 @@ int main(int argc, TCHAR* argv[]) {
 							thread_param_array[i],
 							0,
 							&thread_ID);
+		printf("\n------------------\ncreated thread [%d] with thread ID: %d\n", i, thread_ID);
 		//check thread was created
 		if (thread_array[i] == NULL) {
 			printf("failed to create thread number %d\n", i);
@@ -116,6 +125,7 @@ int main(int argc, TCHAR* argv[]) {
 	//cleanup -------------------------------------------------------------------------
 		//close all threads and mutex and free heap safely
 	for (int i = 0; i < thread_count; i++) {
+		printf("\n------------------\nclosing thread [%d] with thread ID: %d\n", i, thread_ID);
 		CloseHandle(thread_array[i]);
 		HeapFree(thread_param_array[i], 0, NULL);
 	}
@@ -123,6 +133,10 @@ int main(int argc, TCHAR* argv[]) {
 
 	CloseHandle(output_file);
 	CloseHandle(input_file);
+
+	time(&begin);
+	execution_time = end - begin;
+	printf("\n--------------------\nexecution time: %d\n", &execution_time);
 	
 	return 0;
 }
