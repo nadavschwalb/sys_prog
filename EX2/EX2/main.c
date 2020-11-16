@@ -31,16 +31,25 @@ int main(int argc, TCHAR* argv[]) {
 
 
 	// Check for optional args ---------------------------------------------------------
-	if (argc > 3) {
-		arg_options = *(strchr(argv[1],'-') + 1);
-		retval = GetFullPathNameA(argv[2], BUFFSIZE, dir_path, lpFilePart);
-		cypher_key = atoi(argv[3]);
-		thread_count = atoi(argv[4]);
-	}
-	else {
+	if (argc == 5) {
 		retval = GetFullPathNameA(argv[1], BUFFSIZE, dir_path, lpFilePart);
 		cypher_key = atoi(argv[2]);
 		thread_count = atoi(argv[3]);
+		arg_options = (char)*(strchr(argv[4], '-') + 1);
+		if (arg_options != 'd' && arg_options != 'e') {
+			printf("please enter -d to decrypt and -e to encrypt\n");
+			exit(-1);
+		}
+		// Set cypher key for decryption or encryption
+		cypher_key = (arg_options == 'd') ? cypher_key : -cypher_key;
+	}
+	else if(argc < 5) {
+		printf("error: too few arguments\n");
+		exit(-1);
+	}
+	else {
+		printf("error: too many arguments\n");
+		exit(-1);
 	}
 
 	//open input file and get file size ------------------------------------------------
@@ -110,8 +119,19 @@ int main(int argc, TCHAR* argv[]) {
 	}
 
 	//wait for all threads to finish
-	WaitForMultipleObjects(thread_count, thread_array, TRUE, INFINITE);
-
+	DWORD dwthread_finished = WaitForMultipleObjects(thread_count, thread_array, TRUE, MAX_WAIT_THREAD);
+	switch (dwthread_finished)
+	{
+	case WAIT_OBJECT_0:
+		printf("all thread returned successfuly\n");
+		break;
+	case WAIT_TIMEOUT:
+		printf("thread timed out\n");
+		break;
+	default:
+		printf("wait error: %d\n", GetLastError());
+		break;
+	}
 
 
 	////loop through file ( this code will go in the thread function)--------------------

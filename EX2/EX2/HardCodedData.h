@@ -1,2 +1,3 @@
 #define BUFFSIZE 256
 #define MAX_THREAD_COUNT 256
+#define MAX_WAIT_THREAD 5000
