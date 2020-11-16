@@ -40,7 +40,7 @@ BOOL read_file(HANDLE file, char buffer[],int buffer_size) {
 		NULL
 	);
 	if (!success) {
-		printf("read line failed error code: %d\n", GetLastError());
+		printf("read buffer failed error code: %d\n", GetLastError());
 		exit(-1);
 	}
 	if (success && bytes_read == 0) { //EOF

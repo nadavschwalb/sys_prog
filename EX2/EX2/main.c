@@ -13,26 +13,25 @@ int main(int argc, TCHAR* argv[]) {
 	// Golbal Variables ----------------------------------------------------------------
 	DWORD retval = 0;
 	TCHAR dir_path[BUFFSIZE] = TEXT("");
-	LPCSTR* lpFilePart = { NULL };
 	TCHAR file_name[BUFFSIZE] =TEXT("");
 	int cypher_key = 0;
 	int thread_count = 0;
 	char arg_options = '\0';
 	HANDLE input_file;
 	HANDLE output_file;
-	DWORD64 input_file_size = 0; 
+	int input_file_size = 0; 
 	HANDLE thread_array[MAX_THREAD_COUNT];
 	p_Thread_Param thread_param_array[MAX_THREAD_COUNT];
 	DWORD thread_ID;
 	HANDLE ghMutex;
 	time_t begin =0, end = 0  , execution_time = 0;
 
+	// Start run time
 	time(&begin);
-
 
 	// Check for optional args ---------------------------------------------------------
 	if (argc == 5) {
-		retval = GetFullPathNameA(argv[1], BUFFSIZE, dir_path, lpFilePart);
+		retval = GetFullPathNameA(argv[1], BUFFSIZE, dir_path, NULL);
 		cypher_key = atoi(argv[2]);
 		thread_count = atoi(argv[3]);
 		arg_options = (char)*(strchr(argv[4], '-') + 1);
@@ -55,7 +54,6 @@ int main(int argc, TCHAR* argv[]) {
 	//open input file and get file size ------------------------------------------------
 	input_file = create_new_file(dir_path,OPEN_EXISTING);
 	input_file_size = GetFileSize(input_file, NULL);
-	char line_buffer[BUFFSIZE + 1];
 	// get full file path and file name ------------------------------------------------
 	
 	if (retval == 0) {
@@ -156,7 +154,7 @@ int main(int argc, TCHAR* argv[]) {
 
 	time(&begin);
 	execution_time = end - begin;
-	printf("\n--------------------\nexecution time: %d\n", &execution_time);
+	printf("\n--------------------\nexecution time: %d\n", (int)&execution_time);
 	
 	return 0;
 }

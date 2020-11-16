@@ -5,7 +5,7 @@ typedef struct Thread_Param
 	HANDLE hfile_input;
 	HANDLE hfile_output;
 	int section_length;
-	LONG distance_to_move;
+	int distance_to_move;
 	HANDLE ghMutex;
 	int cypher_key;
 	int thread_num;
