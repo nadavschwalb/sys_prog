@@ -15,11 +15,6 @@ HANDLE create_new_file(LPCSTR file_path, DWORD creation_disposition) {
 		NULL
 	);
 
-	if (hfile == INVALID_HANDLE_VALUE) {
-		printf("failed to open file: %s\n terminating\n", file_path);
-		exit(-1);
-	}
-
 	return hfile;
 
 	
@@ -41,6 +36,7 @@ BOOL read_file(HANDLE file, char buffer[],int buffer_size) {
 	);
 	if (!success) {
 		printf("read buffer failed error code: %d\n", GetLastError());
+		CloseHandle(file);
 		exit(-1);
 	}
 	if (success && bytes_read == 0) { //EOF
@@ -66,7 +62,7 @@ int write_file(HANDLE file, char buffer[], int buffer_size) {
 		NULL
 	);
 	if (!success) {
-		printf("read line failed error code: %d\n", GetLastError());
+		printf("write failed error code: %d\n", GetLastError());
 		exit(-1);
 	}
 	if (success && bytes_written <= nbuff) { //written to file

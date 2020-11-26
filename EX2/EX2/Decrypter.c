@@ -1,10 +1,15 @@
-//TODO: function that recieves string and returns decypted string
 
-//TODO: dycription utility functions
 #include <Windows.h>
 #include <stdio.h>
 #include "HardCodedData.h"
 #include "File_Utilities.h"
+
+//Description: decrypts string with key
+//Parameters:  input string and key
+//Returns:	void, works on current string given
+void decipher_string(char str[], int key);
+
+
 void decipher_string(char str[], int key) {
 	int i = 0;
 	short temp;
