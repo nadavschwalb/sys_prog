@@ -76,6 +76,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
+      <DisableSpecificWarnings>4996</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -100,6 +101,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
+      <DisableSpecificWarnings>4996</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -124,11 +126,15 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Factor_Utilites.c" />
+    <ClCompile Include="File_Handeler.c" />
     <ClCompile Include="main.c" />
+    <ClCompile Include="Queue.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Factor_Utilities.h" />
+    <ClInclude Include="File_Handler.h" />
     <ClInclude Include="HardCodedData.h" />
+    <ClInclude Include="Queue.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
