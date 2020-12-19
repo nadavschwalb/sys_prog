@@ -27,6 +27,12 @@
     <ClCompile Include="File_Handeler.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Lock.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Threads.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="HardCodedData.h">
@@ -39,6 +45,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="File_Handler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Lock.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Threads.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

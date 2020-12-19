@@ -20,7 +20,7 @@ factor_struct* get_factors(int number) {
 	}
 	int i = 3;
 	while (i <= (int)sqrt(number)) {
-		while (i % number == 0) {
+		while (number % i == 0) {
 			if (factor_array->array_len >= max_array_size) {
 				max_array_size *= 2;
 				factor_array->array = (unsigned int*)realloc(factor_array->array, max_array_size);
@@ -45,10 +45,12 @@ factor_struct* get_factors(int number) {
 
 
 void print_factors(factor_struct* factor_array, int number) {
-	printf("the prime factors of %d are:", number);
+	printf("the prime factors of %d are: ", number);
 	int i = 0;
 	for (i = 0; i < factor_array->array_len -1; i++) {
 		printf("%d, ", factor_array->array[i]);
 	}
 	printf("%d\r\n", factor_array->array[i]);
 }
+
+

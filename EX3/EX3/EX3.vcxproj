@@ -127,14 +127,18 @@
   <ItemGroup>
     <ClCompile Include="Factor_Utilites.c" />
     <ClCompile Include="File_Handeler.c" />
+    <ClCompile Include="Lock.c" />
     <ClCompile Include="main.c" />
     <ClCompile Include="Queue.c" />
+    <ClCompile Include="Threads.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Factor_Utilities.h" />
     <ClInclude Include="File_Handler.h" />
     <ClInclude Include="HardCodedData.h" />
+    <ClInclude Include="Lock.h" />
     <ClInclude Include="Queue.h" />
+    <ClInclude Include="Threads.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -1,7 +1,7 @@
 #pragma once
 typedef struct factor_array {
-	unsigned int* array;
-	unsigned int array_len;
+	 int* array;
+	 int array_len;
 }factor_struct;
 
 factor_struct* get_factors(int number);
