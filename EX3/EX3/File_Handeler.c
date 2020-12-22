@@ -44,6 +44,21 @@ BOOL getline(HANDLE file, LPSTR* line_buffer) {
 	return TRUE;
 }
 
+BOOL writeline(HANDLE hfile, LPSTR str) {
+	DWORD bytes_to_write = 1;
+	int i = 0;
+	while (*str != '\0'){
+		if (WriteFile(hfile, str, bytes_to_write, NULL, NULL)) {
+			str += 1;
+		}
+		else {
+			printf("failed to write to file");
+			return FALSE;
+		}
+	}
+	return TRUE;
+}
+
 char read_c(HANDLE hFile) {
 	CHAR lpBuffer[1];
 	DWORD nBytesRead = 0;

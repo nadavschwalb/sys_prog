@@ -9,45 +9,76 @@
 #include "Threads.h"
 
 BOOL WINAPI task_thread(LPVOID lpParameter) {
-	printf("started thread id: %d\n", GetCurrentThreadId());
 	Task_Thread_Params* params = (Task_Thread_Params*)lpParameter;
+	DWORD dwSemaphoreGun = WaitForSingleObject(params->SemaphoreGun, INFINITE);
+	switch (dwSemaphoreGun)
+	{
+	case WAIT_OBJECT_0:
+		break;
+	default:
+		return FALSE;
+	}
+	printf("started thread id: %d\n", GetCurrentThreadId());
+	
 	LONG next_priority = 0;
 	LPSTR task_buffer = "";
 	int number = 0;
+	BOOL loop_condition = TRUE;
 
-	while (!Empty(params->queue)) {
-		DWORD lock_status = WaitForSingleObject(params->lock->read_lock, 50);
-		printf("received mutex: %d\n", GetCurrentThreadId());
-		switch (lock_status)
-		{
-		case WAIT_OBJECT_0:
-			if (Empty(params->queue)) return TRUE;
-			next_priority = Pop(params->queue);
-			SetFilePointer(params->task_file, next_priority, NULL, FILE_BEGIN);
 
-			if (getline(params->task_file, &task_buffer)) {
-				number = atoi(strtok(task_buffer, "\r"));
-				factor_struct* factors = get_factors(number);
-				printf("thread id: %d\n", GetCurrentThreadId());
-				print_factors(factors, number);
-				free(factors);
-			}
-			else {
-				printf("failed to read task file\n");
-				return FALSE;
-			}
-			break;
-		case WAIT_TIMEOUT:
-			return FALSE;
-		default:
+	while (loop_condition) {
+		if (!read_lock(params->queue_lock)) {
+			printf("failed to read lock\n");
 			return FALSE;
 		}
-		printf("release mutex id: %d\n", GetCurrentThreadId());
-		ReleaseMutex(params->lock->read_lock);
+		if (Empty(params->queue)) {
+			break;
+		}
+		next_priority = Pop(params->queue);
+
+		
+		printf("next priority: %lu\n",next_priority);
+		printf("by thread id: %d\n", GetCurrentThreadId());
+		if (!read_lock(params->tasks_lock)) {
+			printf("failed to read lock\n");
+			return FALSE;
+		}
+		SetFilePointer(params->task_file, next_priority, NULL, FILE_BEGIN);
+
+		getline(params->task_file, &task_buffer);
+
+		if (!read_release(params->tasks_lock)) {
+			printf("failed to read release\n");
+			return FALSE;
+		}
+		if (!read_release(params->queue_lock)) {
+			printf("failed to release read\n");
+			return FALSE;
+		}
+
+		if (!write_lock(params->tasks_lock)) {
+			printf("failed to write lock\n");
+			return FALSE;
+		}
+
+		number = atoi(strtok(task_buffer, "\r"));
+		factor_struct* factors = get_factors(number);
+		printf("thread id: %d\n", GetCurrentThreadId());
+		print_factors(factors, number);
+		SetFilePointer(params->task_file,0, NULL, FILE_END);
+		write_factors(params->task_file, factors, number);
+		free(factors);
+
+		if (!write_release(params->tasks_lock)) {
+			printf("failed to write release\n");
+			return FALSE;
+		}
+
 	}
-	
-	
-	
+
+
+	printf("thread closed succesfuly: %lu\n", GetCurrentThreadId());
+	ReleaseSemaphore(params->SemaphoreGun,1,NULL);
 	return TRUE;
 }
 

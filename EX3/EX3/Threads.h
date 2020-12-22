@@ -8,8 +8,12 @@
 #include "Threads.h"
 typedef struct Task_Thread_Params {
 	HANDLE task_file;
+	HANDLE SemaphoreGun;
 	Queue* queue;
-	Lock* lock;
+	Lock* queue_lock;
+	Lock* tasks_lock;
+	DWORD file_size;
+
 	
 }Task_Thread_Params;
 

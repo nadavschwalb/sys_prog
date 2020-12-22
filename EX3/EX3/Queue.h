@@ -8,7 +8,6 @@ typedef struct Queue {
 	int tail;
 }Queue;
 
-void fill_priority_queue(Queue* queue, int num_tasks, HANDLE prioraty_file);
 Queue* InitializeQueue(int queue_size);
 LONG Top(Queue* queue);
 LONG Pop(Queue* queue);

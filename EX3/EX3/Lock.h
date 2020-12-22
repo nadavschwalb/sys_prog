@@ -2,11 +2,16 @@
 #include <Windows.h>
 
 typedef struct Lock {
-	HANDLE read_lock;
-	HANDLE write_lock;
-	HANDLE queue_lock;
+	HANDLE Mutex;
+	HANDLE RoomEmpty;
+	HANDLE Turnstile;
+	HANDLE SemaphoreGun;
+	int readers;
 }Lock;
 
-Lock* InitializeLock(int max_thread_count);
+Lock* InitializeLock();
 Lock* DestroyLock(Lock* lock);
-DWORD read_lock(Lock* lock, DWORD timeout);
+BOOL write_release(Lock* lock);
+BOOL read_release(Lock* lock);
+BOOL read_lock(Lock* lock);
+BOOL write_lock(Lock* lock);

@@ -42,23 +42,19 @@ int main(int argc, char** argv) {
 		}
 		else return -1;
 	}
-
+	SetFilePointer(task_file, 0, NULL, FILE_END);
+	writeline(task_file, "\r\n\r\n");
+	SetFilePointer(task_file, 0, NULL, FILE_BEGIN);
 	print_queue(priority_queue);
-
-	//create mutex
-	HANDLE ghMutex = CreateMutexA(NULL, FALSE, NULL);
-	if (ghMutex == NULL) {
-		printf("failed to create mutex\n");
-		return -1;
-	}
-
+	
 	thread_array = (HANDLE*)malloc(num_threads * sizeof(HANDLE));
 	thread_id_array = (DWORD*)malloc(num_threads * sizeof(DWORD));
-	task_params->lock = InitializeLock(num_threads);
-	task_params->lock->read_lock = ghMutex;
+	task_params->file_size = GetFileSize(task_file, NULL);
+	task_params->queue_lock = InitializeLock();
+	task_params->tasks_lock = InitializeLock();
 	task_params->queue = priority_queue;
 	task_params->task_file = task_file;
-
+	task_params->SemaphoreGun = CreateSemaphore(NULL, num_threads, num_threads, NULL);
 
 
 	//create threads
@@ -75,7 +71,8 @@ int main(int argc, char** argv) {
 	free(thread_id_array);
 	CloseHandle(task_file);
 	CloseHandle(prioraty_file);
-	task_params->lock = DestroyLock(task_params->lock);
+	task_params->queue_lock = DestroyLock(task_params->queue_lock);
+	task_params->tasks_lock = DestroyLock(task_params->tasks_lock);
 	priority_queue = DestroyQueue(priority_queue);
 	free(task_params);
 	return 0;

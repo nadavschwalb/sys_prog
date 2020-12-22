@@ -6,3 +6,4 @@ typedef struct factor_array {
 
 factor_struct* get_factors(int number);
 void print_factors(factor_struct* factor_array, int number);
+void write_factors(HANDLE hfile, factor_struct* factor_array, int number);

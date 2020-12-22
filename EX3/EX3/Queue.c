@@ -69,20 +69,6 @@ void print_queue(Queue* queue) {
 	}
 	printf("%ld\n", queue->p_queue[queue->tail -1]);
 }
-
-void fill_priority_queue(Queue* queue,int num_tasks,HANDLE prioraty_file) {
-
-	for (int i = 0; i < num_tasks; i++) {
-		LONG element = get_priority(prioraty_file);
-		if (element >= 0) {
-			if (Push(queue, element)) {
-				continue;
-			}
-			else return -1;
-		}
-		else return -1;
-	}
-}
  
 LONG get_priority(HANDLE priority_file) {
 	LPSTR priority_str = "";

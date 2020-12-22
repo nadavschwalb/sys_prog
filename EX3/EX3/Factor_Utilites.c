@@ -1,8 +1,11 @@
+#pragma once
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
+#include <Windows.h>
 #include "HardCodedData.h"
 #include "Factor_Utilities.h"
+#include "File_Handler.h"
 factor_struct* get_factors(int number) {
 	int max_array_size = ARRAY_LEN;
 	factor_struct* factor_array = (factor_struct*)malloc(sizeof(factor_struct));
@@ -45,7 +48,7 @@ factor_struct* get_factors(int number) {
 
 
 void print_factors(factor_struct* factor_array, int number) {
-	printf("the prime factors of %d are: ", number);
+	 printf("the prime factors of %d are: ", number);
 	int i = 0;
 	for (i = 0; i < factor_array->array_len -1; i++) {
 		printf("%d, ", factor_array->array[i]);
@@ -53,4 +56,16 @@ void print_factors(factor_struct* factor_array, int number) {
 	printf("%d\r\n", factor_array->array[i]);
 }
 
+void write_factors(HANDLE hfile, factor_struct* factor_array, int number) {
+	char factor_buffer[MAX_BUFFER_LEN];
+	sprintf(factor_buffer, "the prime factors of %d are: ", number);
+	writeline(hfile, (LPSTR)factor_buffer);
+		int i = 0;
+	for (i = 0; i < factor_array->array_len - 1; i++) {
+		sprintf(factor_buffer, "%d, ", factor_array->array[i]);
+		writeline(hfile, (LPSTR)factor_buffer);
+	}
+	sprintf(factor_buffer, "%d\r\n", factor_array->array[i]);
+	writeline(hfile, (LPSTR)factor_buffer);
+}
 
