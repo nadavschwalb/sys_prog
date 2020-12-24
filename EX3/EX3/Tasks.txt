@@ -7,16 +7,11 @@
 40
 45
 50
-
-
-
-
 the prime factors of 10 are: 2, 5
 the prime factors of 15 are: 3, 5
+the prime factors of 20 are: 2, 2, 5
 the prime factors of 25 are: 5, 5
-the prime factors of 35 are: 5, 7
 the prime factors of 40 are: 2, 2, 2, 5
-the prime factors of 45 are: 3, 3, 5
+the prime factors of 35 are: 5, 7
 the prime factors of 50 are: 2, 5, 5
-
-
+the prime factors of 45 are: 3, 3, 5

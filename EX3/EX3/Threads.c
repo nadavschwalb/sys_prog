@@ -31,18 +31,20 @@ BOOL WINAPI task_thread(LPVOID lpParameter) {
 			printf("failed to read lock\n");
 			return FALSE;
 		}
+		printf("read_lock queue thread id: %d\n", GetCurrentThreadId());
 		if (Empty(params->queue)) {
 			break;
 		}
 		next_priority = Pop(params->queue);
 
-		
+
 		printf("next priority: %lu\n",next_priority);
-		printf("by thread id: %d\n", GetCurrentThreadId());
+
 		if (!read_lock(params->tasks_lock)) {
 			printf("failed to read lock\n");
 			return FALSE;
 		}
+		printf("read_lock tasks thread id: %d\n", GetCurrentThreadId());
 		SetFilePointer(params->task_file, next_priority, NULL, FILE_BEGIN);
 
 		getline(params->task_file, &task_buffer);
@@ -51,15 +53,18 @@ BOOL WINAPI task_thread(LPVOID lpParameter) {
 			printf("failed to read release\n");
 			return FALSE;
 		}
+		printf("read_release tasks thread id: %d\n", GetCurrentThreadId());
+
 		if (!read_release(params->queue_lock)) {
 			printf("failed to release read\n");
 			return FALSE;
 		}
-
+		printf("read_release queue thread id: %d\n", GetCurrentThreadId());
 		if (!write_lock(params->tasks_lock)) {
 			printf("failed to write lock\n");
 			return FALSE;
 		}
+		printf("write_lock tasks thread id: %d\n", GetCurrentThreadId());
 
 		number = atoi(strtok(task_buffer, "\r"));
 		factor_struct* factors = get_factors(number);
@@ -73,7 +78,7 @@ BOOL WINAPI task_thread(LPVOID lpParameter) {
 			printf("failed to write release\n");
 			return FALSE;
 		}
-
+		printf("write_release tasks thread id: %d\n", GetCurrentThreadId());
 	}
 
 

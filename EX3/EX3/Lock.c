@@ -36,7 +36,7 @@ BOOL read_lock(Lock* lock) {
 		return FALSE;
 	}
 	ReleaseMutex(lock->Turnstile);
-	DWORD dwMutex = WaitForSingleObject(lock->Mutex, 10);
+	DWORD dwMutex = WaitForSingleObject(lock->Mutex, INFINITE);
 	switch (dwMutex)
 	{
 	case WAIT_OBJECT_0:
@@ -50,7 +50,7 @@ BOOL read_lock(Lock* lock) {
 	}
 	lock->readers++;
 	if (lock->readers == 1) {
-		dwRoomEmpty = WaitForSingleObject(lock->RoomEmpty, 10);
+		dwRoomEmpty = WaitForSingleObject(lock->RoomEmpty, INFINITE);
 		switch (dwRoomEmpty)
 		{
 		case WAIT_OBJECT_0:
@@ -69,7 +69,7 @@ BOOL read_lock(Lock* lock) {
 
 
 BOOL read_release(Lock* lock) {
-	DWORD dwMutex = WaitForSingleObject(lock->Mutex, 10);
+	DWORD dwMutex = WaitForSingleObject(lock->Mutex, INFINITE);
 	switch (dwMutex)
 	{
 	case WAIT_OBJECT_0:
@@ -90,7 +90,7 @@ BOOL read_release(Lock* lock) {
 }
 
 BOOL write_lock(Lock* lock) {
-	DWORD dwTurnstile = WaitForSingleObject(lock->Turnstile, 10);
+	DWORD dwTurnstile = WaitForSingleObject(lock->Turnstile, INFINITE);
 	switch (dwTurnstile)
 	{
 	case WAIT_OBJECT_0:
@@ -102,7 +102,7 @@ BOOL write_lock(Lock* lock) {
 		printf("unknown error in turnstile\n");
 		return FALSE;
 	}
-	DWORD dwRoomEmpty = WaitForSingleObject(lock->RoomEmpty, 10);
+	DWORD dwRoomEmpty = WaitForSingleObject(lock->RoomEmpty, INFINITE);
 	switch (dwRoomEmpty)
 	{
 	case WAIT_OBJECT_0:

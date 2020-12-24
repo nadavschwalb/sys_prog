@@ -43,7 +43,7 @@ int main(int argc, char** argv) {
 		else return -1;
 	}
 	SetFilePointer(task_file, 0, NULL, FILE_END);
-	writeline(task_file, "\r\n\r\n");
+	printf("\n");
 	SetFilePointer(task_file, 0, NULL, FILE_BEGIN);
 	print_queue(priority_queue);
 	
