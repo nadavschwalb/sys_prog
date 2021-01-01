@@ -18,5 +18,16 @@
     <ClCompile Include="server.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Player_Thread.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Player_Thread.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Hard_Coded_Data.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

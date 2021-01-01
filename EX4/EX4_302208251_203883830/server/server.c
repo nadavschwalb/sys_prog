@@ -1,19 +1,24 @@
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
 #endif
-#define DEFAULT_PORT "27015"
-#define DEFAULT_BUFLEN 512
+
 #include <windows.h>
 #include <winsock2.h>
 #include <ws2tcpip.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include "Player_Thread.h"
+#include "Hard_Coded_Data.h"
 #pragma comment(lib, "Ws2_32.lib")
 
 int main(int argc, char* argv) {
+	//variables
 	WSADATA wsa_data;
 	int iresult;
 	struct addrinfo *result = NULL, *ptr = NULL, hints;
-
+	DWORD thread_id[MAX_THREADS];
+	HANDLE threads[MAX_THREADS];
+	Player_Thread_Params* player_params[MAX_THREADS];
 	// Initialize Winsock
 	iresult = WSAStartup(MAKEWORD(2, 2), &wsa_data);
 	if (iresult != 0) {
@@ -65,51 +70,53 @@ int main(int argc, char* argv) {
 	}
 
 
+	//connect clients and open threads
 
 	SOCKET ClientSocket = INVALID_SOCKET;
-
-	// Accept a client socket
-	ClientSocket = accept(ServerSocket, NULL, NULL);
-	if (ClientSocket == INVALID_SOCKET) {
-		printf("accept failed: %d\n", WSAGetLastError());
-		closesocket(ServerSocket);
-		WSACleanup();
-		return 1;
-	}
-
-
-
-	char recvbuf[DEFAULT_BUFLEN];
-	int iSendResult;
-	int recvbuflen = DEFAULT_BUFLEN;
-
-	// Receive until the peer shuts down the connection
-	do {
-
-		iresult = recv(ClientSocket, recvbuf, recvbuflen, 0);
-		if (iresult > 0) {
-			printf("Bytes received: %d\n", iresult);
-
-			// Echo the buffer back to the sender
-			iSendResult = send(ClientSocket, recvbuf, iresult, 0);
-			if (iSendResult == SOCKET_ERROR) {
-				printf("send failed: %d\n", WSAGetLastError());
-				closesocket(ClientSocket);
-				WSACleanup();
-				return 1;
-			}
-			printf("Bytes sent: %d\n", iSendResult);
-		}
-		else if (iresult == 0)
-			printf("Connection closing...\n");
-		else {
-			printf("recv failed: %d\n", WSAGetLastError());
-			closesocket(ClientSocket);
+	int thread_number = 0;
+	while (thread_number<2) {
+		player_params[thread_number] = (Player_Thread_Params*)malloc(sizeof(Player_Thread_Params));
+		ClientSocket = INVALID_SOCKET;
+		// Accept a client socket
+		ClientSocket = accept(ServerSocket, NULL, NULL);
+		if (ClientSocket == INVALID_SOCKET) {
+			printf("accept failed: %d\n", WSAGetLastError());
+			closesocket(ServerSocket);
 			WSACleanup();
+			return 1;
+		}
+		// Open Player Thread
+		player_params[thread_number]->socket = ClientSocket;
+		player_params[thread_number]->player = thread_number;
+		threads[thread_number] = CreateThread(NULL,
+			0,
+			player_thread,
+			(LPVOID)player_params[thread_number],
+			0,
+			&thread_id[thread_number]);
+		if (threads[thread_number] == INVALID_HANDLE_VALUE) {
+			printf("failed to create thread\n");
+			free(player_params[thread_number]);
 			return -1;
 		}
 
-	} while (iresult > 0);
+		thread_number+=1;
+
+	}
+
+
+	DWORD dw_wait_result = WaitForMultipleObjects(thread_number, threads, TRUE, INFINITE);
+	switch (dw_wait_result)
+	{
+	case WAIT_OBJECT_0:
+		printf("threads ended succesfully\n");
+		break;
+	case WAIT_TIMEOUT:
+		printf("one or more threads failed to return\n");
+		return 1;
+	default:
+		break;
+	}
 
 	// shutdown the send half of the connection since no more data will be sent
 	iresult = shutdown(ClientSocket, SD_SEND);
@@ -128,5 +135,10 @@ int main(int argc, char* argv) {
 		return -1;
 	}
 
+	//cleanup
+	for (int i = 0; i < thread_number; i++) {
+		free(player_params[i]);
+		CloseHandle(threads[i]);
+	}
 	return 0;
 }

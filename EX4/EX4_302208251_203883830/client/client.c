@@ -20,10 +20,11 @@ int main(int argc, char **argv)
 {
 	WSADATA wsaData;
 	SOCKET ConnectSocket = INVALID_SOCKET;
+	struct sockaddr_in  *sockaddr_ipv4;
 	struct addrinfo *result = NULL,
 		*ptr = NULL,
 		hints;
-	const char *sendbuf = "this is a test";
+	const char *sendbuf = "this is a test\0";
 	char recvbuf[DEFAULT_BUFLEN];
 	int iResult;
 	int recvbuflen = DEFAULT_BUFLEN;
@@ -54,10 +55,9 @@ int main(int argc, char **argv)
 		return 1;
 	}
 
-	// Attempt to connect to an address until one succeeds
-	for (ptr = result; ptr != NULL; ptr = ptr->ai_next) {
-
-		// Create a SOCKET for connecting to server
+	//Attempt to connect to server
+	ptr = result->ai_next;
+	while (TRUE) {
 		ConnectSocket = socket(ptr->ai_family, ptr->ai_socktype,
 			ptr->ai_protocol);
 		if (ConnectSocket == INVALID_SOCKET) {
@@ -65,17 +65,37 @@ int main(int argc, char **argv)
 			WSACleanup();
 			return 1;
 		}
-
-		// Connect to server.
 		iResult = connect(ConnectSocket, ptr->ai_addr, (int)ptr->ai_addrlen);
+		sockaddr_ipv4 = (struct sockaddr_in *) ptr->ai_addr;
 		if (iResult == SOCKET_ERROR) {
 			closesocket(ConnectSocket);
 			ConnectSocket = INVALID_SOCKET;
-			continue;
+			printf("Failed connecting to server on %s:%d\n",
+				inet_ntoa(sockaddr_ipv4->sin_addr), 
+				sockaddr_ipv4->sin_port);
+			int answer = 0;
+			printf("1. Try to reconnect\n2. Exit\n");
+			scanf("%d", &answer);
+			if (answer == 1) {
+				ptr = ptr->ai_next;
+				if (ptr == NULL) { printf("no valid connections\n"); return 1; }
+				continue;
+			}
+			else if (answer == 2) {
+				printf("terminating program\n");
+				return 1;
+			}
+			else {
+				printf("invalid choice\n");
+				return 1;
+			}
 		}
 		break;
 	}
-	printf("connected to server\n");
+	
+	printf("Connected to server on %s:%d\n",
+		inet_ntoa(sockaddr_ipv4->sin_addr),
+		sockaddr_ipv4->sin_port);
 
 	freeaddrinfo(result);
 
@@ -109,8 +129,12 @@ int main(int argc, char **argv)
 	do {
 
 		iResult = recv(ConnectSocket, recvbuf, recvbuflen, 0);
-		if (iResult > 0)
+		if (iResult > 0){
 			printf("Bytes received: %d\n", iResult);
+			recvbuf[iResult] = '\0';
+			printf("%s\n", recvbuf);
+		}
+			
 		else if (iResult == 0)
 			printf("Connection closed\n");
 		else
