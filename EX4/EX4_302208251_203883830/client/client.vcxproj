@@ -126,6 +126,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="client.c" />
+    <ClCompile Include="Messages.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Hard_Coded_Data.h" />
+    <ClInclude Include="Messages.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -125,11 +125,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Game.c" />
+    <ClCompile Include="Messages.c" />
     <ClCompile Include="Player_Thread.c" />
     <ClCompile Include="server.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Hard_Coded_Data.h" />
+    <ClInclude Include="Game.h" />
+    <ClInclude Include="Messages.h" />
     <ClInclude Include="Player_Thread.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

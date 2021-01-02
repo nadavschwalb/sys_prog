@@ -10,7 +10,8 @@
 #include <stdlib.h>
 #include "Player_Thread.h"
 #include "Hard_Coded_Data.h"
-#include <time.h>
+#include "Game.h"
+#include "Messages.h"
 #pragma comment(lib, "Ws2_32.lib")
 
 DWORD WINAPI player_thread(LPVOID lpParam) {
@@ -22,24 +23,24 @@ DWORD WINAPI player_thread(LPVOID lpParam) {
 	char sendbuf[DEFAULT_BUFLEN];
 	int recvbuflen = DEFAULT_BUFLEN;
 	BOOL quit = FALSE;
-	// Receive until the peer shuts down the connection
+	Player* player = create_player();
+	
+
+	//client approved
+	sprintf(sendbuf, "SERVER_APPROVED\n");
+	iSendResult = send(params->socket, sendbuf, strlen(sendbuf), 0);
+	if (iSendResult == SOCKET_ERROR) {
+		printf("send failed: %d\n", WSAGetLastError());
+		closesocket(params->socket);
+		WSACleanup();
+		return 1;
+	}
 
 
 	while (!quit) {
 
 		do {
-			//DWORD dw_result = WaitForSingleObject(params->socket_mutex, INFINITE);
-			//switch (dw_result)
-			//{
-			//case WAIT_OBJECT_0:
-			//	printf("player %d connect to socket\n", params->player);
-			//	break;
-			//case WAIT_TIMEOUT:
-			//	printf("player %d failed to receive acsess to socket\n", params->player);
-			//	return 0;
-			//default:
-			//	break;
-			//}
+
 			iresult = recv(params->socket, recvbuf, recvbuflen, 0);
 			if (iresult > 0) {
 
@@ -47,12 +48,23 @@ DWORD WINAPI player_thread(LPVOID lpParam) {
 				recvbuf[iresult] = '\0';
 				printf("%s\n", recvbuf);
 				sprintf(sendbuf, "message recieved player %d\n", params->player);
-				if (strcmp(recvbuf, "Quit") == 0) {
+				Message* message = message_parser(recvbuf);
+				switch (handle_message(message, player))
+				{
+				case NORMAL:
+					break;
+				case UNKNOWN:
+					sprintf(message->response, "Unknown request from server\n");
+					break;
+				case DISCONECT:
 					quit = TRUE;
-					sprintf(sendbuf, "player %d quit the game\n", params->player);
+					sprintf(message->response, "player %d quit the game\n", params->player);
+					break;
+				default:
+					break;
 				}
 				
-				iSendResult = send(params->socket, sendbuf, strlen(sendbuf), 0);
+				iSendResult = send(params->socket, message->response, strlen(sendbuf), 0);
 				if (iSendResult == SOCKET_ERROR) {
 					printf("send failed: %d\n", WSAGetLastError());
 					closesocket(params->socket);
@@ -69,11 +81,10 @@ DWORD WINAPI player_thread(LPVOID lpParam) {
 				WSACleanup();
 				return -1;
 			}
-			//printf("player %d releasing socket\n", params->player);
-			//ReleaseMutex(params->socket_mutex);
 		} while (iresult > 0);
 
 	}
+	destroy_player(player);
 	
 	return 0;
 }

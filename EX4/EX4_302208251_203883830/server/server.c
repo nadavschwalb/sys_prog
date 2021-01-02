@@ -9,6 +9,7 @@
 #include <stdlib.h>
 #include "Player_Thread.h"
 #include "Hard_Coded_Data.h"
+#include "Messages.h"
 #pragma comment(lib, "Ws2_32.lib")
 
 int main(int argc, char* argv) {
@@ -20,6 +21,7 @@ int main(int argc, char* argv) {
 	HANDLE threads[MAX_THREADS];
 	HANDLE socket_mutex;
 	Player_Thread_Params* player_params[MAX_THREADS];
+	
 	// Initialize Winsock
 	iresult = WSAStartup(MAKEWORD(2, 2), &wsa_data);
 	if (iresult != 0) {

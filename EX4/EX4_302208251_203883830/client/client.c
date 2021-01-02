@@ -5,6 +5,7 @@
 #include <ws2tcpip.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include "Messages.h"
 
 
 // Need to link with Ws2_32.lib, Mswsock.lib, and Advapi32.lib
@@ -107,8 +108,49 @@ int main(int argc, char **argv)
 		return 1;
 	}
 
-	// Send an initial buffer
-	strcpy(sendbuf, argv[2]);
+
+	//// Send an initial buffer
+	//strcpy(sendbuf, argv[2]);
+	//iResult = send(ConnectSocket, sendbuf, (int)strlen(sendbuf), 0);
+	//if (iResult == SOCKET_ERROR) {
+	//	printf("send failed with error: %d\n", WSAGetLastError());
+	//	closesocket(ConnectSocket);
+	//	WSACleanup();
+	//	return 1;
+	//}
+
+	//// recieve initial response
+	//iResult = recv(ConnectSocket, recvbuf, recvbuflen, 0);
+	//if (iResult > 0) {
+	//	recvbuf[iResult] = '\0';
+	//	Message* message = message_parser(recvbuf);
+	//	switch (handle_message(message))
+	//	{
+	//	case NORMAL:
+	//		break;
+	//	case UNKNOWN:
+	//		break;
+	//	case APPROVED:
+	//		printf("Connected to server on %s:%d\n",
+	//			inet_ntoa(sockaddr_ipv4->sin_addr),
+	//			sockaddr_ipv4->sin_port);
+	//		break;
+	//	case DISCONECT:
+	//		quit = TRUE;
+	//		break;
+	//	default:
+	//		break;
+	//	}
+	//}
+	//else if (iResult == 0)
+	//	printf("Connection closed\n");
+	//else {
+	//	printf("recv failed with error: %d\n", WSAGetLastError());
+	//}
+	char sendbuf[DEFAULT_BUFLEN];
+
+	//player setup
+	sprintf(sendbuf, "CLIENT_REQUEST:%s\n", argv[3]);
 	iResult = send(ConnectSocket, sendbuf, (int)strlen(sendbuf), 0);
 	if (iResult == SOCKET_ERROR) {
 		printf("send failed with error: %d\n", WSAGetLastError());
@@ -117,21 +159,13 @@ int main(int argc, char **argv)
 		return 1;
 	}
 
-	// recieve initial response
-	iResult = recv(ConnectSocket, recvbuf, recvbuflen, 0);
-	if (iResult > 0) {
-		recvbuf[iResult] = '\0';
-		printf("%s", recvbuf);
-	}
-	else if (iResult == 0)
-		printf("Connection closed\n");
-	else {
-		printf("recv failed with error: %d\n", WSAGetLastError());
-	}
+	//server approval and menu
+
 
 	while (!quit) {
 		char message[DEFAULT_BUFLEN];
 		scanf("%s", message);
+		strcat(message, "\n");
 		if (strcmp(message, "Quit") == 0) {
 			printf("quitting\n");
 			quit = TRUE;
@@ -149,7 +183,21 @@ int main(int argc, char **argv)
 			iResult = recv(ConnectSocket, recvbuf, recvbuflen, 0);
 			if (iResult > 0) {
 				recvbuf[iResult] = '\0';
-				printf("%s", recvbuf);
+				Message* message = message_parser(recvbuf);
+				switch (handle_message(message))
+				{
+				case NORMAL:
+					break;
+				case UNKNOWN:
+					break;
+				case APPROVED:
+					break;
+				case DISCONECT:
+					quit = TRUE;
+					break;
+				default:
+					break;
+				}
 			}
 			else if (iResult == 0)
 				printf("Connection closed\n");
