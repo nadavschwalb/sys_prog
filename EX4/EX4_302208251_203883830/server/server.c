@@ -18,6 +18,7 @@ int main(int argc, char* argv) {
 	struct addrinfo *result = NULL, *ptr = NULL, hints;
 	DWORD thread_id[MAX_THREADS];
 	HANDLE threads[MAX_THREADS];
+	HANDLE socket_mutex;
 	Player_Thread_Params* player_params[MAX_THREADS];
 	// Initialize Winsock
 	iresult = WSAStartup(MAKEWORD(2, 2), &wsa_data);
@@ -71,7 +72,11 @@ int main(int argc, char* argv) {
 
 
 	//connect clients and open threads
-
+	socket_mutex = CreateMutex(NULL, FALSE, NULL);
+	if (socket_mutex == INVALID_HANDLE_VALUE) {
+		printf("failed to initialize mutex: error code %d\n", GetLastError());
+		return 1;
+	}
 	SOCKET ClientSocket = INVALID_SOCKET;
 	int thread_number = 0;
 	while (thread_number<2) {
@@ -88,6 +93,7 @@ int main(int argc, char* argv) {
 		// Open Player Thread
 		player_params[thread_number]->socket = ClientSocket;
 		player_params[thread_number]->player = thread_number;
+		player_params[thread_number]->socket_mutex = socket_mutex;
 		threads[thread_number] = CreateThread(NULL,
 			0,
 			player_thread,
@@ -119,7 +125,7 @@ int main(int argc, char* argv) {
 	}
 
 	// shutdown the send half of the connection since no more data will be sent
-	iresult = shutdown(ClientSocket, SD_SEND);
+	iresult = shutdown(ClientSocket, SD_BOTH);
 	if (iresult == SOCKET_ERROR) {
 		printf("shutdown failed: %d\n", WSAGetLastError());
 		closesocket(ClientSocket);
@@ -140,5 +146,6 @@ int main(int argc, char* argv) {
 		free(player_params[i]);
 		CloseHandle(threads[i]);
 	}
+	CloseHandle(socket_mutex);
 	return 0;
 }
