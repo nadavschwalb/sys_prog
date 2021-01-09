@@ -8,8 +8,8 @@ typedef struct Player {
 	char* username;
 	char combo[5];
 	char move[5];
-	char bulls;
-	char cows;
+	int bulls;
+	int cows;
 }Player;
 
 typedef struct GameSession {

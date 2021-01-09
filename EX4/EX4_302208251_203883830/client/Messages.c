@@ -91,6 +91,14 @@ int handle_message(Message* message) {
 		scanf("%d", &answer);
 		sprintf(message->response, "CLIENT_PLAYER_MOVE:%d\n", answer);
 	}
+	else if (strcmp(message->message_type, "SERVER_GAME_RESULTS") == 0) {
+		printf("Bulls:%d\nCows:%d\n%s played:%s\n",
+			atoi(message->param_list[0]),
+			atoi(message->param_list[1]),
+			message->param_list[2],
+			message->param_list[3]);
+		strcpy(message->response, "CLIENT_RECIVED_RESULTS\n");
+	}
 
 	else {
 		printf("Unknown message from server\n%s\n",message->message_type);

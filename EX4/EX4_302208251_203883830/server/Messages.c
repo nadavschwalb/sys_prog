@@ -6,6 +6,9 @@
 #include "Hard_Coded_Data.h"
 #include "Player_Thread.h"
 
+//local functions
+void game_result_message(char* response, Player_Thread_Params* param);
+
 Message* message_parser(char* message) {
 	char* p_colon = NULL;
 	char* token;
@@ -58,6 +61,17 @@ void print_message(Message* message) {
 	}
 }
 
+void game_result_message(char* response,Player_Thread_Params* param) {
+	int opponent = param->player_number ^ 1;
+	int bulls = param->game_session->player_array[param->player_number]->bulls;
+	int cows = param->game_session->player_array[param->player_number]->cows;
+	
+	sprintf(response, "SERVER_GAME_RESULTS:%d;%d;%s;%s\n",bulls,cows,
+		param->game_session->player_array[opponent]->username,
+		param->game_session->player_array[opponent]->move );
+	return;
+}
+
 int handle_message(Message* message, Player_Thread_Params* param) {
 	if (strcmp(message->message_type, "CLIENT_REQUEST") == 0) {
 		strcpy(param->game_session->player_array[param->player_number]->username, message->param_list[0]);
@@ -89,7 +103,9 @@ int handle_message(Message* message, Player_Thread_Params* param) {
 		printf("bulls: %d\ncows: %d\n",
 			param->game_session->player_array[param->player_number]->bulls,
 			param->game_session->player_array[param->player_number]->cows);
+		game_result_message(message->response, param);
 	}
+
 	else if (strcmp(message->message_type, "CLIENT_DISCONNECT") == 0) {
 		return DISCONNECT;
 	}
@@ -101,12 +117,15 @@ int handle_message(Message* message, Player_Thread_Params* param) {
 		while (param->game_session->active_players < 2) {
 
 		}
-		int other_player = param->player_number ^ 1;
-		sprintf(message->response, "SERVER_INVITE:%s\n", param->game_session->player_array[other_player]->username);
+		int opponent = param->player_number ^ 1;
+		sprintf(message->response, "SERVER_INVITE:%s\n", param->game_session->player_array[opponent]->username);
 		//strcpy(message->response, "SERVER_INVITE:OTHER_PLAYER\n");
 	}
 	else if (strcmp(message->message_type, "CLIENT_INVITE_APPROVED") == 0) {
 		strcpy(message->response, "SERVER_SETUP_REQUEST\n");
+	}
+	else if (strcmp(message->message_type, "CLIENT_RECIVED_RESULTS") == 0) {
+		strcpy(message->response, "SERVER_PLAYER_MOVE_REQUEST\n");
 	}
 
 	

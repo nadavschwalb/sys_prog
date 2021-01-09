@@ -7,8 +7,8 @@
 #include "Hard_Coded_Data.h"
 #include "Player_Thread.h"
 
-char calc_cows(GameSession* game_session, int self, int other);
-char calc_bulls(GameSession* game_session, int self, int other);
+int calc_cows(GameSession* game_session, int self, int other);
+int calc_bulls(GameSession* game_session, int self, int other);
 
 Player* create_player() {
 	Player* player = (Player*)malloc(sizeof(Player));
@@ -75,8 +75,8 @@ void play_move(GameSession* game_session, int self) {
 	game_session->player_array[self]->cows = calc_cows(game_session, self, other);
 }
 
-char calc_cows(GameSession* game_session,int self, int other) {
-	char cows = 0;
+int calc_cows(GameSession* game_session,int self, int other) {
+	int cows = 0;
 	for (int i = 0; i < 4; i++) {
 		if (strchr(game_session->player_array[other]->combo,
 			game_session->player_array[self]->move[i]) != NULL 
@@ -88,8 +88,8 @@ char calc_cows(GameSession* game_session,int self, int other) {
 	return cows;
 }
 
-char calc_bulls(GameSession* game_session, int self, int other) {
-	char bulls = 0;
+int calc_bulls(GameSession* game_session, int self, int other) {
+	int bulls = 0;
 	for (int i = 0; i < 4; i++) {
 		if (game_session->player_array[self]->move[i] == 
 			game_session->player_array[other]->combo[i]) 
