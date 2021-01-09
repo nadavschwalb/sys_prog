@@ -64,13 +64,31 @@ int handle_message(Message* message, Player_Thread_Params* param) {
 		strcpy(message->response, "SERVER_APPROVED\n");
 	}
 	else if (strcmp(message->message_type, "CLIENT_SETUP") == 0) {
-		param->game_session->player_array[param->player_number]->combo = atoi(message->param_list[0]);
-		printf("%s's combo: %d\n",
+		strcpy(param->game_session->player_array[param->player_number]->combo,message->param_list[0]);
+		printf("%s's combo: %s\n",
 			param->game_session->player_array[param->player_number]->username,
 			param->game_session->player_array[param->player_number]->combo);
+		strcpy(message->response, "SERVER_PLAYER_MOVE_REQUEST\n");
 	}
 	else if (strcmp(message->message_type, "CLIENT_PLAYER_MOVE") == 0) {
-		param->game_session->player_array[param->player_number]->move = atoi(message->param_list[0]);
+		strcpy(param->game_session->player_array[param->player_number]->move, message->param_list[0]);
+		SetEvent(param->game_session->play_events[param->player_number]);
+		printf("%s's guess: %s\n", 
+			param->game_session->player_array[param->player_number]->username,
+			param->game_session->player_array[param->player_number]->move);
+		strcpy(message->response, "SERVER_PLAYER_MOVE_REQUEST\n");
+		switch (WaitForMultipleObjects(2, param->game_session->play_events, TRUE, INFINITE))
+		{
+		case WAIT_OBJECT_0:
+			printf("turn ended\n");
+		default:
+			break;
+		}
+		ResetEvent(param->game_session->play_events[param->player_number]);
+		play_move(param->game_session, param->player_number);
+		printf("bulls: %d\ncows: %d\n",
+			param->game_session->player_array[param->player_number]->bulls,
+			param->game_session->player_array[param->player_number]->cows);
 	}
 	else if (strcmp(message->message_type, "CLIENT_DISCONNECT") == 0) {
 		return DISCONNECT;
@@ -79,7 +97,6 @@ int handle_message(Message* message, Player_Thread_Params* param) {
 		strcpy(message->response, "SERVER_MAIN_MENU\n");
 	}
 	else if (strcmp(message->message_type, "CLIENT_VERSUS") == 0) {
-		param->game_session->player_array[param->player_number]->ready_to_play = TRUE;
 		param->game_session->active_players++;
 		while (param->game_session->active_players < 2) {
 

@@ -85,6 +85,12 @@ int handle_message(Message* message) {
 		scanf("%d", &answer);
 		sprintf(message->response, "CLIENT_SETUP:%d\n", answer);
 	}
+	else if (strcmp(message->message_type, "SERVER_PLAYER_MOVE_REQUEST") == 0) {
+		printf("Choose your guess:");
+		int answer = 0;
+		scanf("%d", &answer);
+		sprintf(message->response, "CLIENT_PLAYER_MOVE:%d\n", answer);
+	}
 
 	else {
 		printf("Unknown message from server\n%s\n",message->message_type);

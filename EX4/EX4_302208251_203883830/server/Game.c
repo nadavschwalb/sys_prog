@@ -5,6 +5,10 @@
 #include "Game.h"
 #include "Messages.h"
 #include "Hard_Coded_Data.h"
+#include "Player_Thread.h"
+
+char calc_cows(GameSession* game_session, int self, int other);
+char calc_bulls(GameSession* game_session, int self, int other);
 
 Player* create_player() {
 	Player* player = (Player*)malloc(sizeof(Player));
@@ -23,12 +27,16 @@ GameSession* create_game_session() {
 	game_session->session_mutex = CreateMutex(NULL, FALSE, NULL);
 	game_session->active_players = 0;
 	game_session->turn_ended = 0;
+	game_session->play_events[0] = CreateEventA(NULL, TRUE, FALSE, NULL);
+	game_session->play_events[1] = CreateEventA(NULL, TRUE, FALSE, NULL);
 	return game_session;
 }
 
 GameSession* destroy_game_session(GameSession* game_session) {
 	CloseHandle(game_session->session_mutex);
 	CloseHandle(game_session->session_file);
+	CloseHandle(game_session->play_events[0]);
+	CloseHandle(game_session->play_events[1]);
 	free(game_session);
 	return NULL;
 }
@@ -58,5 +66,35 @@ BOOL open_session_file(GameSession* game_session) {
 	else {
 		return TRUE;
 	}
+}
+
+void play_move(GameSession* game_session, int self) {
+	
+	int other = self ^ 1;
+	game_session->player_array[self]->bulls = calc_bulls(game_session, self, other);
+	game_session->player_array[self]->cows = calc_cows(game_session, self, other);
+}
+
+char calc_cows(GameSession* game_session,int self, int other) {
+	char cows = 0;
+	for (int i = 0; i < 4; i++) {
+		if (strchr(game_session->player_array[other]->combo,
+			game_session->player_array[self]->move[i]) != NULL 
+			&& 
+			game_session->player_array[self]->move[i] != 
+			game_session->player_array[other]->combo[i]) 
+			cows++;
+	}
+	return cows;
+}
+
+char calc_bulls(GameSession* game_session, int self, int other) {
+	char bulls = 0;
+	for (int i = 0; i < 4; i++) {
+		if (game_session->player_array[self]->move[i] == 
+			game_session->player_array[other]->combo[i]) 
+			bulls++;
+	}
+	return bulls;
 }
 

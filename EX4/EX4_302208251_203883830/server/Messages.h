@@ -3,10 +3,10 @@
 #define UNKNOWN -2
 #define NORMAL -3
 
-#include "Player_Thread.h"
+
 #include <Windows.h>
 #include "Game.h"
-
+#include "Player_Thread.h"
 typedef struct Message {
 	char* message_type;
 	char** param_list;
