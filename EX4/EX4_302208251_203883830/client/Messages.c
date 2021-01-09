@@ -14,7 +14,7 @@ Message* message_parser(char* message) {
 	Message* parsed_message = (Message*)malloc(sizeof(Message));
 	parsed_message->message_type = (char*)malloc(sizeof(char)*strlen(message) + 1);
 	parsed_message->param_list = (char**)malloc(sizeof(char)*strlen(message));
-	parsed_message->response = (char**)malloc(sizeof(char)*DEFAULT_BUFLEN);
+	parsed_message->response = (char*)malloc(sizeof(char)*DEFAULT_BUFLEN);
 	parsed_message->param_count = 0;
 	p_colon = strchr(message, ':');
 	if (p_colon == NULL) {
@@ -62,17 +62,32 @@ void print_message(Message* message) {
 
 int handle_message(Message* message) {
 	if (strcmp(message->message_type, "SERVER_MAIN_MENU") == 0) {
-		printf("Choose what to do next:\n1. Play against another client\n2. Quit");
+		printf("Choose what to do next:\n1. Play against another client\n2. Quit\n");
 		int answer = 0;
 		scanf("%d", &answer);
-		return answer;
+		if(answer == 1) strcpy(message->response, "CLIENT_VERSUS\n");
+		else return DISCONNECT;
 	}
 	else if (strcmp(message->message_type, "SERVER_APPROVED") == 0) {
-		strcpy(message->response, "OK");
+		strcpy(message->response, "READY_FOR_MENU\n");
+	}
+	else if (strcmp(message->message_type, "SERVER_DENIED") == 0) {
+		printf("server denied\n");
+		return DISCONNECT;
+	}
+	else if (strcmp(message->message_type, "SERVER_INVITE") == 0) {
+		printf("Game is on!\n your opponents name is: %s\n", message->param_list[0]);
+		strcpy(message->response, "CLIENT_INVITE_APPROVED\n");
+	}
+	else if (strcmp(message->message_type, "SERVER_SETUP_REQUEST") == 0) {
+		printf("Choose your 4 digits:");
+		int answer = 0;
+		scanf("%d", &answer);
+		sprintf(message->response, "CLIENT_SETUP:%d\n", answer);
 	}
 
 	else {
-		printf("Unknown message from server\n");
+		printf("Unknown message from server\n%s\n",message->message_type);
 		return UNKNOWN;
 	}
 

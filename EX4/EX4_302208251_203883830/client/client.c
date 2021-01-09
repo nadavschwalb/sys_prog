@@ -107,48 +107,7 @@ int main(int argc, char **argv)
 		WSACleanup();
 		return 1;
 	}
-
-
-	//// Send an initial buffer
-	//strcpy(sendbuf, argv[2]);
-	//iResult = send(ConnectSocket, sendbuf, (int)strlen(sendbuf), 0);
-	//if (iResult == SOCKET_ERROR) {
-	//	printf("send failed with error: %d\n", WSAGetLastError());
-	//	closesocket(ConnectSocket);
-	//	WSACleanup();
-	//	return 1;
-	//}
-
-	//// recieve initial response
-	//iResult = recv(ConnectSocket, recvbuf, recvbuflen, 0);
-	//if (iResult > 0) {
-	//	recvbuf[iResult] = '\0';
-	//	Message* message = message_parser(recvbuf);
-	//	switch (handle_message(message))
-	//	{
-	//	case NORMAL:
-	//		break;
-	//	case UNKNOWN:
-	//		break;
-	//	case APPROVED:
-	//		printf("Connected to server on %s:%d\n",
-	//			inet_ntoa(sockaddr_ipv4->sin_addr),
-	//			sockaddr_ipv4->sin_port);
-	//		break;
-	//	case DISCONECT:
-	//		quit = TRUE;
-	//		break;
-	//	default:
-	//		break;
-	//	}
-	//}
-	//else if (iResult == 0)
-	//	printf("Connection closed\n");
-	//else {
-	//	printf("recv failed with error: %d\n", WSAGetLastError());
-	//}
-	char sendbuf[DEFAULT_BUFLEN];
-
+	
 	//player setup
 	sprintf(sendbuf, "CLIENT_REQUEST:%s\n", argv[3]);
 	iResult = send(ConnectSocket, sendbuf, (int)strlen(sendbuf), 0);
@@ -159,40 +118,36 @@ int main(int argc, char **argv)
 		return 1;
 	}
 
-	//server approval and menu
-
+	////server approval 
+	//iResult = recv(ConnectSocket, recvbuf, recvbuflen, 0);
+	//recvbuf[iResult] = '\0';
+	//printf("%s\n", recvbuf);
+	//if (iResult > 0) {
+	//	Message* msg = message_parser(recvbuf);
+	//	handle_message(msg);
+	//	strcpy(sendbuf, msg->response);
+	//	destroy_message(msg);
+	//}
+	//else if (iResult == 0)
+	//	printf("Connection closed\n");
+	//else {
+	//	printf("recv failed with error: %d\n", WSAGetLastError());
+	//}
 
 	while (!quit) {
-		char message[DEFAULT_BUFLEN];
-		scanf("%s", message);
-		strcat(message, "\n");
-		if (strcmp(message, "Quit") == 0) {
-			printf("quitting\n");
-			quit = TRUE;
-		}
-		iResult = send(ConnectSocket, message, (int)strlen(message), 0);
-		if (iResult == SOCKET_ERROR) {
-			printf("send failed with error: %d\n", WSAGetLastError());
-			closesocket(ConnectSocket);
-			WSACleanup();
-			return 1;
-		}
 
-		do
-		{
 			iResult = recv(ConnectSocket, recvbuf, recvbuflen, 0);
+			recvbuf[iResult] = '\0';
+			printf("%s\n", recvbuf);
+			Message* message = message_parser(recvbuf);
 			if (iResult > 0) {
-				recvbuf[iResult] = '\0';
-				Message* message = message_parser(recvbuf);
 				switch (handle_message(message))
 				{
 				case NORMAL:
 					break;
 				case UNKNOWN:
 					break;
-				case APPROVED:
-					break;
-				case DISCONECT:
+				case DISCONNECT:
 					quit = TRUE;
 					break;
 				default:
@@ -204,8 +159,15 @@ int main(int argc, char **argv)
 			else {
 				printf("recv failed with error: %d\n", WSAGetLastError());
 			}
-		} while (iResult >= recvbuflen);
 
+		iResult = send(ConnectSocket, message->response, (int)strlen(message->response), 0);
+		if (iResult == SOCKET_ERROR) {
+			printf("send failed with error: %d\n", WSAGetLastError());
+			closesocket(ConnectSocket);
+			WSACleanup();
+			return 1;
+		}
+		destroy_message(message);
 	}
 
 

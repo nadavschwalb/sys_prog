@@ -29,6 +29,9 @@ int main(int argc, char* argv) {
 		return 1;
 	}
 
+	//test area
+
+
 	// create address info struct hints 
 	ZeroMemory(&hints, sizeof(hints));
 	hints.ai_family = AF_INET;
@@ -75,13 +78,15 @@ int main(int argc, char* argv) {
 
 	//connect clients and open threads
 	socket_mutex = CreateMutex(NULL, FALSE, NULL);
+	GameSession* game_session = create_game_session();
 	if (socket_mutex == INVALID_HANDLE_VALUE) {
 		printf("failed to initialize mutex: error code %d\n", GetLastError());
 		return 1;
 	}
 	SOCKET ClientSocket = INVALID_SOCKET;
 	int thread_number = 0;
-	while (thread_number<2) {
+	DWORD handle_count = 0;
+	while (thread_number<3) {
 		player_params[thread_number] = (Player_Thread_Params*)malloc(sizeof(Player_Thread_Params));
 		ClientSocket = INVALID_SOCKET;
 		// Accept a client socket
@@ -94,8 +99,9 @@ int main(int argc, char* argv) {
 		}
 		// Open Player Thread
 		player_params[thread_number]->socket = ClientSocket;
-		player_params[thread_number]->player = thread_number;
+		player_params[thread_number]->player_number = thread_number;
 		player_params[thread_number]->socket_mutex = socket_mutex;
+		player_params[thread_number]->game_session = game_session;
 		threads[thread_number] = CreateThread(NULL,
 			0,
 			player_thread,
@@ -109,6 +115,7 @@ int main(int argc, char* argv) {
 		}
 
 		thread_number+=1;
+
 
 	}
 
@@ -149,5 +156,6 @@ int main(int argc, char* argv) {
 		CloseHandle(threads[i]);
 	}
 	CloseHandle(socket_mutex);
+	destroy_game_session(game_session);
 	return 0;
 }

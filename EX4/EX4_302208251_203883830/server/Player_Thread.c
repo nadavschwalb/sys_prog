@@ -16,24 +16,32 @@
 
 DWORD WINAPI player_thread(LPVOID lpParam) {
 	Player_Thread_Params* params = (Player_Thread_Params*)lpParam;
-	printf("player %d thread started\n", params->player);
+	printf("player %d thread started\n", params->player_number);
 	int iresult = 0;
 	int iSendResult = 0;
 	char recvbuf[DEFAULT_BUFLEN];
 	char sendbuf[DEFAULT_BUFLEN];
 	int recvbuflen = DEFAULT_BUFLEN;
 	BOOL quit = FALSE;
-	Player* player = create_player();
 	
 
-	//client approved
-	sprintf(sendbuf, "SERVER_APPROVED\n");
-	iSendResult = send(params->socket, sendbuf, strlen(sendbuf), 0);
-	if (iSendResult == SOCKET_ERROR) {
-		printf("send failed: %d\n", WSAGetLastError());
-		closesocket(params->socket);
-		WSACleanup();
-		return 1;
+	if (params->player_number > 1) {
+		printf("too many players\n");
+		const char* denial_response = "SERVER_DENIED\n";
+		iSendResult = send(params->socket, denial_response, strlen(denial_response), 0);
+		if (iSendResult == SOCKET_ERROR) {
+			printf("send failed: %d\n", WSAGetLastError());
+			closesocket(params->socket);
+			WSACleanup();
+			return 1;
+		}
+		return 0;
+	}
+
+	Player* player = create_player();
+	params->game_session->player_array[params->player_number] = player;
+	if (open_session_file(params->game_session)) {
+		printf("game session file opened\n");
 	}
 
 
@@ -44,34 +52,32 @@ DWORD WINAPI player_thread(LPVOID lpParam) {
 			iresult = recv(params->socket, recvbuf, recvbuflen, 0);
 			if (iresult > 0) {
 
-				// Echo the buffer back to the sender
+				// recieve and handle messages
 				recvbuf[iresult] = '\0';
 				printf("%s\n", recvbuf);
-				sprintf(sendbuf, "message recieved player %d\n", params->player);
 				Message* message = message_parser(recvbuf);
-				switch (handle_message(message, player))
+				switch (handle_message(message,params))
 				{
 				case NORMAL:
 					break;
 				case UNKNOWN:
 					sprintf(message->response, "Unknown request from server\n");
 					break;
-				case DISCONECT:
+				case DISCONNECT:
 					quit = TRUE;
-					sprintf(message->response, "player %d quit the game\n", params->player);
+					sprintf(message->response, "player %d quit the game\n", params->player_number);
 					break;
 				default:
 					break;
 				}
 				
-				iSendResult = send(params->socket, message->response, strlen(sendbuf), 0);
+				iSendResult = send(params->socket, message->response, strlen(message->response), 0);
 				if (iSendResult == SOCKET_ERROR) {
 					printf("send failed: %d\n", WSAGetLastError());
 					closesocket(params->socket);
 					WSACleanup();
 					return 1;
 				}
-				printf("Bytes sent: %d\n", iSendResult);
 			}
 			else if (iresult == 0)
 				printf("Connection closing...\n");

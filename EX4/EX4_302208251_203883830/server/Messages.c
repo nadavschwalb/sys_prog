@@ -4,6 +4,7 @@
 #include <string.h>
 #include "Messages.h"
 #include "Hard_Coded_Data.h"
+#include "Player_Thread.h"
 
 Message* message_parser(char* message) {
 	char* p_colon = NULL;
@@ -57,23 +58,41 @@ void print_message(Message* message) {
 	}
 }
 
-int handle_message(Message* message, Player* player) {
+int handle_message(Message* message, Player_Thread_Params* param) {
 	if (strcmp(message->message_type, "CLIENT_REQUEST") == 0) {
-		strcpy(player->username, message->param_list[0]);
+		strcpy(param->game_session->player_array[param->player_number]->username, message->param_list[0]);
 		strcpy(message->response, "SERVER_APPROVED\n");
 	}
 	else if (strcmp(message->message_type, "CLIENT_SETUP") == 0) {
-		player->combo = atoi(message->param_list[0]);
+		param->game_session->player_array[param->player_number]->combo = atoi(message->param_list[0]);
+		printf("%s's combo: %d\n",
+			param->game_session->player_array[param->player_number]->username,
+			param->game_session->player_array[param->player_number]->combo);
 	}
 	else if (strcmp(message->message_type, "CLIENT_PLAYER_MOVE") == 0) {
-		player->move = atoi(message->param_list[0]);
+		param->game_session->player_array[param->player_number]->move = atoi(message->param_list[0]);
 	}
 	else if (strcmp(message->message_type, "CLIENT_DISCONNECT") == 0) {
-		return DISCONECT;
+		return DISCONNECT;
+	}
+	else if (strcmp(message->message_type, "READY_FOR_MENU") == 0) {
+		strcpy(message->response, "SERVER_MAIN_MENU\n");
 	}
 	else if (strcmp(message->message_type, "CLIENT_VERSUS") == 0) {
-		player->ready_to_play = TRUE;
+		param->game_session->player_array[param->player_number]->ready_to_play = TRUE;
+		param->game_session->active_players++;
+		while (param->game_session->active_players < 2) {
+
+		}
+		int other_player = param->player_number ^ 1;
+		sprintf(message->response, "SERVER_INVITE:%s\n", param->game_session->player_array[other_player]->username);
+		//strcpy(message->response, "SERVER_INVITE:OTHER_PLAYER\n");
 	}
+	else if (strcmp(message->message_type, "CLIENT_INVITE_APPROVED") == 0) {
+		strcpy(message->response, "SERVER_SETUP_REQUEST\n");
+	}
+
+	
 	else {
 		printf("Unknown message from client\n");
 		return UNKNOWN;
