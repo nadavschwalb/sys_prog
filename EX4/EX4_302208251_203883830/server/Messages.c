@@ -91,25 +91,55 @@ int handle_message(Message* message, Player_Thread_Params* param) {
 			param->game_session->player_array[param->player_number]->username,
 			param->game_session->player_array[param->player_number]->move);
 		strcpy(message->response, "SERVER_PLAYER_MOVE_REQUEST\n");
+		//wait for other player to enter there move
 		switch (WaitForMultipleObjects(2, param->game_session->play_events, TRUE, INFINITE))
 		{
 		case WAIT_OBJECT_0:
 			printf("turn ended\n");
+			break;
 		default:
 			break;
 		}
 		ResetEvent(param->game_session->play_events[param->player_number]);
 		play_move(param->game_session, param->player_number);
+		SetEvent(param->game_session->play_events[param->player_number]);
+		//wait for other client thread to complete move calculation
+		switch (WaitForMultipleObjects(2, param->game_session->play_events, TRUE, INFINITE))
+		{
+		case WAIT_OBJECT_0:
+			printf("move calculated\n");
+			break;
+		default:
+			break;
+		}
+		ResetEvent(param->game_session->play_events[param->player_number]);
+		if (param->game_session->winners[0] && param->game_session->winners[1]) {
+			printf("Draw\n");
+			param->game_session->winners[param->player_number] = FALSE;
+			return DRAW;
+		}
+		else if (param->game_session->winners[param->player_number]) {
+			printf("%s won\n", param->game_session->player_array[param->player_number]->username);
+			param->game_session->winners[param->player_number] = FALSE;
+			return WIN;
+		}
+		else if (param->game_session->winners[param->player_number ^ 1]) {
+			return LOSE;
+			param->game_session->winners[param->player_number] = FALSE;
+		}
+		else game_result_message(message->response, param);
+
+
 		printf("bulls: %d\ncows: %d\n",
 			param->game_session->player_array[param->player_number]->bulls,
 			param->game_session->player_array[param->player_number]->cows);
-		game_result_message(message->response, param);
+		
 	}
 
 	else if (strcmp(message->message_type, "CLIENT_DISCONNECT") == 0) {
 		return DISCONNECT;
 	}
-	else if (strcmp(message->message_type, "READY_FOR_MENU") == 0) {
+	else if (strcmp(message->message_type, "CLIENT_READY_FOR_MENU") == 0) {
 		strcpy(message->response, "SERVER_MAIN_MENU\n");
 	}
 	else if (strcmp(message->message_type, "CLIENT_VERSUS") == 0) {

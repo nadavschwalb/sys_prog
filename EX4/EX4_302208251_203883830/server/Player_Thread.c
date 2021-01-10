@@ -67,6 +67,19 @@ DWORD WINAPI player_thread(LPVOID lpParam) {
 					quit = TRUE;
 					sprintf(message->response, "player %d quit the game\n", params->player_number);
 					break;
+				case WIN:
+					sprintf(message->response, "SERVER_WIN:%s;%s\n",
+						params->game_session->player_array[params->player_number]->username,
+						params->game_session->player_array[params->player_number]->combo);
+					break;
+				case LOSE:
+					sprintf(message->response, "SERVER_WIN:%s;%s\n",
+						params->game_session->player_array[params->player_number^1]->username,
+						params->game_session->player_array[params->player_number^1]->combo);
+					break;
+				case DRAW:
+					strcpy(message->response, "SERVER_DRAW\n");
+					break;
 				default:
 					break;
 				}

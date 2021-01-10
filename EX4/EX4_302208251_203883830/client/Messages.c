@@ -69,7 +69,7 @@ int handle_message(Message* message) {
 		else return DISCONNECT;
 	}
 	else if (strcmp(message->message_type, "SERVER_APPROVED") == 0) {
-		strcpy(message->response, "READY_FOR_MENU\n");
+		strcpy(message->response, "CLIENT_READY_FOR_MENU\n");
 	}
 	else if (strcmp(message->message_type, "SERVER_DENIED") == 0) {
 		printf("server denied\n");
@@ -99,7 +99,14 @@ int handle_message(Message* message) {
 			message->param_list[3]);
 		strcpy(message->response, "CLIENT_RECIVED_RESULTS\n");
 	}
-
+	else if (strcmp(message->message_type, "SERVER_DRAW") == 0) {
+		printf("It’s a tie\n");
+		strcpy(message->response, "CLIENT_READY_FOR_MENU\n");
+	}
+	else if (strcmp(message->message_type, "SERVER_WIN") == 0) {
+		printf("%s won!\nopponents number was %s\n", message->param_list[0], message->param_list[1]);
+		strcpy(message->response, "CLIENT_READY_FOR_MENU\n");
+	}
 	else {
 		printf("Unknown message from server\n%s\n",message->message_type);
 		return UNKNOWN;

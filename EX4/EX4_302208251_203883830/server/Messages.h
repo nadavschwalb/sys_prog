@@ -2,6 +2,9 @@
 #define DISCONNECT -1
 #define UNKNOWN -2
 #define NORMAL -3
+#define WIN -4
+#define DRAW -5
+#define LOSE -6
 
 
 #include <Windows.h>

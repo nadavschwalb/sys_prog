@@ -27,6 +27,8 @@ GameSession* create_game_session() {
 	game_session->session_mutex = CreateMutex(NULL, FALSE, NULL);
 	game_session->active_players = 0;
 	game_session->turn_ended = 0;
+	game_session->winners[0] = FALSE;
+	game_session->winners[1] = FALSE;
 	game_session->play_events[0] = CreateEventA(NULL, TRUE, FALSE, NULL);
 	game_session->play_events[1] = CreateEventA(NULL, TRUE, FALSE, NULL);
 	return game_session;
@@ -68,11 +70,14 @@ BOOL open_session_file(GameSession* game_session) {
 	}
 }
 
-void play_move(GameSession* game_session, int self) {
+int play_move(GameSession* game_session, int self) {
 	
 	int other = self ^ 1;
 	game_session->player_array[self]->bulls = calc_bulls(game_session, self, other);
 	game_session->player_array[self]->cows = calc_cows(game_session, self, other);
+	if (game_session->player_array[self]->bulls == 4) {
+		game_session->winners[self] = TRUE;
+	}
 }
 
 int calc_cows(GameSession* game_session,int self, int other) {
@@ -97,4 +102,3 @@ int calc_bulls(GameSession* game_session, int self, int other) {
 	}
 	return bulls;
 }
-
