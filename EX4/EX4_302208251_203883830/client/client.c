@@ -169,7 +169,8 @@ int main(int argc, char **argv)
 		}
 		destroy_message(message);
 	}
-
+	printf("exited loop\n");
+	Sleep(20);
 
 	// shutdown the connection since no more data will be sent
 	iResult = shutdown(ConnectSocket, SD_SEND);

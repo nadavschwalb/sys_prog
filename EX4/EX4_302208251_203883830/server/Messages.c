@@ -100,8 +100,10 @@ int handle_message(Message* message, Player_Thread_Params* param) {
 		default:
 			break;
 		}
+
 		ResetEvent(param->game_session->play_events[param->player_number]);
 		play_move(param->game_session, param->player_number);
+		printf("played move setting event player: %d\n", param->player_number);
 		SetEvent(param->game_session->play_events[param->player_number]);
 		//wait for other client thread to complete move calculation
 		switch (WaitForMultipleObjects(2, param->game_session->play_events, TRUE, INFINITE))
@@ -124,8 +126,9 @@ int handle_message(Message* message, Player_Thread_Params* param) {
 			return WIN;
 		}
 		else if (param->game_session->winners[param->player_number ^ 1]) {
-			return LOSE;
 			param->game_session->winners[param->player_number] = FALSE;
+			return LOSE;
+			
 		}
 		else game_result_message(message->response, param);
 
@@ -137,6 +140,7 @@ int handle_message(Message* message, Player_Thread_Params* param) {
 	}
 
 	else if (strcmp(message->message_type, "CLIENT_DISCONNECT") == 0) {
+		printf("%s disconnected\n", param->game_session->player_array[param->player_number]->username);
 		return DISCONNECT;
 	}
 	else if (strcmp(message->message_type, "CLIENT_READY_FOR_MENU") == 0) {

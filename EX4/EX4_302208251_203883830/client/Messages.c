@@ -65,14 +65,25 @@ int handle_message(Message* message) {
 		printf("Choose what to do next:\n1. Play against another client\n2. Quit\n");
 		int answer = 0;
 		scanf("%d", &answer);
-		if(answer == 1) strcpy(message->response, "CLIENT_VERSUS\n");
-		else return DISCONNECT;
+		if (answer == 1) { 
+			strcpy(message->response, "CLIENT_VERSUS\n");
+			return NORMAL;
+		}
+		else if(answer == 2){ 
+			strcpy(message->response, "CLIENT_DISCONNECT\n");
+			return DISCONNECT;
+		}
+		else {		
+			printf("unknown command\n");
+			return UNKNOWN;
+		}
 	}
 	else if (strcmp(message->message_type, "SERVER_APPROVED") == 0) {
 		strcpy(message->response, "CLIENT_READY_FOR_MENU\n");
 	}
 	else if (strcmp(message->message_type, "SERVER_DENIED") == 0) {
 		printf("server denied\n");
+
 		return DISCONNECT;
 	}
 	else if (strcmp(message->message_type, "SERVER_INVITE") == 0) {

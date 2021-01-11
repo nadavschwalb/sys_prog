@@ -65,7 +65,6 @@ DWORD WINAPI player_thread(LPVOID lpParam) {
 					break;
 				case DISCONNECT:
 					quit = TRUE;
-					sprintf(message->response, "player %d quit the game\n", params->player_number);
 					break;
 				case WIN:
 					sprintf(message->response, "SERVER_WIN:%s;%s\n",
