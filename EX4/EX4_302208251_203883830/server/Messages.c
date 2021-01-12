@@ -75,6 +75,7 @@ void game_result_message(char* response,Player_Thread_Params* param) {
 int handle_message(Message* message, Player_Thread_Params* param) {
 	if (strcmp(message->message_type, "CLIENT_REQUEST") == 0) {
 		strcpy(param->game_session->player_array[param->player_number]->username, message->param_list[0]);
+		param->game_session->connected_players++;
 		strcpy(message->response, "SERVER_APPROVED\n");
 	}
 	else if (strcmp(message->message_type, "CLIENT_SETUP") == 0) {
@@ -85,6 +86,10 @@ int handle_message(Message* message, Player_Thread_Params* param) {
 		strcpy(message->response, "SERVER_PLAYER_MOVE_REQUEST\n");
 	}
 	else if (strcmp(message->message_type, "CLIENT_PLAYER_MOVE") == 0) {
+		if (param->game_session->active_players < 2) {
+			printf("opponent quit\n");
+			strcpy(message->response, "SERVER_OPPONENT_QUIT\n");
+		}
 		strcpy(param->game_session->player_array[param->player_number]->move, message->param_list[0]);
 		SetEvent(param->game_session->play_events[param->player_number]);
 		printf("%s's guess: %s\n", 
@@ -141,19 +146,25 @@ int handle_message(Message* message, Player_Thread_Params* param) {
 
 	else if (strcmp(message->message_type, "CLIENT_DISCONNECT") == 0) {
 		printf("%s disconnected\n", param->game_session->player_array[param->player_number]->username);
+		param->game_session->connected_players--;
+		param->game_session->active_players--;
 		return DISCONNECT;
 	}
 	else if (strcmp(message->message_type, "CLIENT_READY_FOR_MENU") == 0) {
 		strcpy(message->response, "SERVER_MAIN_MENU\n");
 	}
 	else if (strcmp(message->message_type, "CLIENT_VERSUS") == 0) {
+		if (param->game_session->connected_players < 2) {
+			printf("only one player connected to server\n");
+			strcpy(message->response, "SERVER_NO_OPPONENTS\n");
+			return NORMAL;
+		}
 		param->game_session->active_players++;
 		while (param->game_session->active_players < 2) {
-
+			
 		}
 		int opponent = param->player_number ^ 1;
 		sprintf(message->response, "SERVER_INVITE:%s\n", param->game_session->player_array[opponent]->username);
-		//strcpy(message->response, "SERVER_INVITE:OTHER_PLAYER\n");
 	}
 	else if (strcmp(message->message_type, "CLIENT_INVITE_APPROVED") == 0) {
 		strcpy(message->response, "SERVER_SETUP_REQUEST\n");

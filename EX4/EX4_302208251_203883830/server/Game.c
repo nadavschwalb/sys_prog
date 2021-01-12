@@ -25,6 +25,7 @@ BOOL destroy_player(Player* player) {
 GameSession* create_game_session() {
 	GameSession* game_session = (GameSession*)malloc(sizeof(GameSession));
 	game_session->session_mutex = CreateMutex(NULL, FALSE, NULL);
+	game_session->connected_players = 0;
 	game_session->active_players = 0;
 	game_session->turn_ended = 0;
 	game_session->winners[0] = FALSE;
@@ -70,7 +71,7 @@ BOOL open_session_file(GameSession* game_session) {
 	}
 }
 
-int play_move(GameSession* game_session, int self) {
+void play_move(GameSession* game_session, int self) {
 	
 	int other = self ^ 1;
 	game_session->player_array[self]->bulls = calc_bulls(game_session, self, other);

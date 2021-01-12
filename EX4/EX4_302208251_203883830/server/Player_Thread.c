@@ -20,7 +20,6 @@ DWORD WINAPI player_thread(LPVOID lpParam) {
 	int iresult = 0;
 	int iSendResult = 0;
 	char recvbuf[DEFAULT_BUFLEN];
-	char sendbuf[DEFAULT_BUFLEN];
 	int recvbuflen = DEFAULT_BUFLEN;
 	BOOL quit = FALSE;
 	
@@ -64,20 +63,22 @@ DWORD WINAPI player_thread(LPVOID lpParam) {
 					sprintf(message->response, "Unknown request from server\n");
 					break;
 				case DISCONNECT:
-					quit = TRUE;
-					break;
+					return 1;
 				case WIN:
 					sprintf(message->response, "SERVER_WIN:%s;%s\n",
 						params->game_session->player_array[params->player_number]->username,
 						params->game_session->player_array[params->player_number]->combo);
+					params->game_session->active_players--;
 					break;
 				case LOSE:
 					sprintf(message->response, "SERVER_WIN:%s;%s\n",
 						params->game_session->player_array[params->player_number^1]->username,
 						params->game_session->player_array[params->player_number^1]->combo);
+					params->game_session->active_players--;
 					break;
 				case DRAW:
 					strcpy(message->response, "SERVER_DRAW\n");
+					params->game_session->active_players--;
 					break;
 				default:
 					break;
@@ -86,7 +87,7 @@ DWORD WINAPI player_thread(LPVOID lpParam) {
 				iSendResult = send(params->socket, message->response, strlen(message->response), 0);
 				if (iSendResult == SOCKET_ERROR) {
 					printf("send failed: %d\n", WSAGetLastError());
-					closesocket(params->socket);
+					//closesocket(params->socket);
 					WSACleanup();
 					return 1;
 				}

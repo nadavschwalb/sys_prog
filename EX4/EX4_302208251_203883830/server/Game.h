@@ -15,6 +15,7 @@ typedef struct Player {
 typedef struct GameSession {
 	HANDLE session_file;
 	HANDLE session_mutex;
+	int connected_players;
 	int active_players;
 	char turn_ended;
 	Player* player_array[2];
@@ -28,4 +29,4 @@ BOOL destroy_player(Player* player);
 GameSession* create_game_session();
 GameSession* destroy_game_session(GameSession* game_session);
 BOOL open_session_file(GameSession* game_session);
-int play_move(GameSession* game_session, int self);
+void play_move(GameSession* game_session, int self);

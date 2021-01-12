@@ -86,6 +86,13 @@ int handle_message(Message* message) {
 
 		return DISCONNECT;
 	}
+	else if (strcmp(message->message_type, "SERVER_NO_OPPONENTS") == 0) {
+		strcpy(message->response, "CLIENT_READY_FOR_MENU\n");
+	}
+	else if (strcmp(message->message_type, "SERVER_OPPONENT_QUIT") == 0) {
+		printf("opponent quit\n");
+		strcpy(message->response, "CLIENT_READY_FOR_MENU\n");
+	}
 	else if (strcmp(message->message_type, "SERVER_INVITE") == 0) {
 		printf("Game is on!\n your opponents name is: %s\n", message->param_list[0]);
 		strcpy(message->response, "CLIENT_INVITE_APPROVED\n");

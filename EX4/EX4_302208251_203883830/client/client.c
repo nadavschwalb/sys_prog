@@ -80,7 +80,7 @@ int main(int argc, char **argv)
 			printf("1. Try to reconnect\n2. Exit\n");
 			scanf("%d", &answer);
 			if (answer == 1) {
-				ptr = ptr->ai_next;
+				//ptr = ptr->ai_next;
 				if (ptr == NULL) { printf("no valid connections\n"); return 1; }
 				continue;
 			}
